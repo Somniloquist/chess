@@ -1,7 +1,8 @@
 class Board
   attr_reader :grid
-  def initialize(col, row)
-    @grid = Array.new(col) {Array.new(row, "")}
+  def initialize(columns=8, rows=8)
+    @grid = Array.new(columns) {Array.new(rows, "")}
+    set_pieces(columns, rows)
   end
 
   def to_s
@@ -13,7 +14,7 @@ class Board
     grid.each_with_index do |row, i|
       output << " #{i+1} "
       row.each do |cell|
-        cell.empty? ? output << "#     " : output << "#  #{cell.name}  "
+        cell.class == Piece ? output << "#  #{cell.type.to_s[0]}  " : output << "#     "
       end
 
       output << "#\n   "
@@ -24,4 +25,26 @@ class Board
     output << "\n"
   end
 
+  private
+  def set_pieces(columns, rows)
+    columns.times { |i| grid[1][i] = Piece.new(:pawn, :white)}
+    grid[0][0] = Piece.new(:rook, :white)
+    grid[0][7] = Piece.new(:rook, :white)
+    grid[0][6] = Piece.new(:knight, :white)
+    grid[0][1] = Piece.new(:knight, :white)
+    grid[0][5] = Piece.new(:bishop, :white)
+    grid[0][2] = Piece.new(:bishop, :white)
+    grid[0][4] = Piece.new(:king, :white)
+    grid[0][3] = Piece.new(:queen, :white)
+
+    columns.times { |i| grid[-2][i] = Piece.new(:pawn, :black)}
+    grid[7][0] = Piece.new(:rook, :black)
+    grid[7][7] = Piece.new(:rook, :black)
+    grid[7][6] = Piece.new(:knight, :black)
+    grid[7][1] = Piece.new(:knight, :black)
+    grid[7][5] = Piece.new(:bishop, :black)
+    grid[7][2] = Piece.new(:bishop, :black)
+    grid[7][4] = Piece.new(:king, :black)
+    grid[7][3] = Piece.new(:queen, :black)
+  end
 end

@@ -14,7 +14,7 @@ class Board
     grid.each_with_index do |row, i|
       output << " #{i+1} "
       row.each do |cell|
-        cell.class == Piece ? output << "#  #{cell.type.to_s[0]}  " : output << "#     "
+        cell.class == Piece ? output << "#  #{cell.symbol}  " : output << "#     "
       end
 
       output << "#\n   "

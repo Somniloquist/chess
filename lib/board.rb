@@ -7,11 +7,10 @@ class Board
 
   def to_s
     output = "\n   "
-    output << "   a     b     c     d     e     f     g     h\n   "
     grid.size.times { output << "######" }
     output << "#\n"
 
-    grid.each_with_index do |row, i|
+    grid.reverse_each_with_index do |row, i|
       output << " #{i+1} "
       row.each do |cell|
         cell.class == Piece ? output << "#  #{cell.symbol}  " : output << "#     "
@@ -22,7 +21,7 @@ class Board
       output << "#\n"
 
     end
-    output << "\n"
+    output << "      a     b     c     d     e     f     g     h\n   "
   end
 
   private
@@ -46,5 +45,15 @@ class Board
     grid[7][2] = Piece.new(:bishop, :black)
     grid[7][4] = Piece.new(:king, :black)
     grid[7][3] = Piece.new(:queen, :black)
+  end
+end
+
+# shamelessly copied from https://stackoverflow.com/a/20248507
+# used to print board in standard chess style
+class Array
+  def reverse_each_with_index &block
+    (0...length).reverse_each do |i|
+      block.call self[i], i
+    end
   end
 end

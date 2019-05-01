@@ -2,7 +2,7 @@ class Board
   attr_reader :grid
   def initialize(columns=8, rows=8)
     @grid = Array.new(columns) {Array.new(rows, "")}
-    set_pieces(columns, rows)
+    initialize_pieces
   end
 
   def to_s
@@ -21,12 +21,12 @@ class Board
       output << "#\n"
 
     end
-    output << "      a     b     c     d     e     f     g     h\n   "
+    output << "      A     B     C     D     E     F     G     H\n   "
   end
 
   private
-  def set_pieces(columns, rows)
-    columns.times { |i| grid[1][i] = Piece.new(:pawn, :white)}
+  def initialize_pieces
+    8.times { |i| grid[1][i] = Piece.new(:pawn, :white)}
     grid[0][0] = Piece.new(:rook, :white)
     grid[0][7] = Piece.new(:rook, :white)
     grid[0][6] = Piece.new(:knight, :white)
@@ -36,15 +36,15 @@ class Board
     grid[0][4] = Piece.new(:king, :white)
     grid[0][3] = Piece.new(:queen, :white)
 
-    columns.times { |i| grid[-2][i] = Piece.new(:pawn, :black)}
-    grid[7][0] = Piece.new(:rook, :black)
-    grid[7][7] = Piece.new(:rook, :black)
-    grid[7][6] = Piece.new(:knight, :black)
-    grid[7][1] = Piece.new(:knight, :black)
-    grid[7][5] = Piece.new(:bishop, :black)
-    grid[7][2] = Piece.new(:bishop, :black)
-    grid[7][4] = Piece.new(:king, :black)
-    grid[7][3] = Piece.new(:queen, :black)
+    8.times { |i| grid[-2][i] = Piece.new(:pawn, :black)}
+    grid[-1][0] = Piece.new(:rook, :black)
+    grid[-1][7] = Piece.new(:rook, :black)
+    grid[-1][6] = Piece.new(:knight, :black)
+    grid[-1][1] = Piece.new(:knight, :black)
+    grid[-1][5] = Piece.new(:bishop, :black)
+    grid[-1][2] = Piece.new(:bishop, :black)
+    grid[-1][4] = Piece.new(:king, :black)
+    grid[-1][3] = Piece.new(:queen, :black)
   end
 end
 

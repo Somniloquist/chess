@@ -37,4 +37,22 @@ describe Board do
     end
  end
 
+ describe "#moves" do
+  it "returns a list of possible moves" do
+    knight = Piece.new(:knight, :white)
+    expect(knight.moves).to eql([[-1,2],[-2,1],[2,1],[1,2],[2,-1],[1,-2],[-2,-1],[-1,-2]])
+  end
+ end
+
+ describe "#move_piece" do
+  it "moves knight from B1 to C3" do
+    board = Board.new
+    expect(board.cell(:B1).type).to eql(:knight)
+    knight = board.cell(:B1)
+    board.move_piece(:B1, :C3)
+    expect(board.cell(:C3)).to eql(knight)
+
+  end
+ end
+
 end

@@ -13,46 +13,44 @@ describe Board do
 
     it "has proper placement of chess pieces" do
       board = Board.new
-      columns = "ABCDEFGH".split("")
+      columns = "abcdefgh".split("")
       
-      columns.each { |column| expect(board.cell("#{column}2".to_sym).symbol).to eql(SYMBOLS[:pawnwhite]) }
-      expect(board.cell(:A1).symbol).to eql(SYMBOLS[:rookwhite])
-      expect(board.cell(:B1).symbol).to eql(SYMBOLS[:knightwhite])
-      expect(board.cell(:C1).symbol).to eql(SYMBOLS[:bishopwhite])
-      expect(board.cell(:D1).symbol).to eql(SYMBOLS[:queenwhite])
-      expect(board.cell(:E1).symbol).to eql(SYMBOLS[:kingwhite])
-      expect(board.cell(:F1).symbol).to eql(SYMBOLS[:bishopwhite])
-      expect(board.cell(:G1).symbol).to eql(SYMBOLS[:knightwhite])
-      expect(board.cell(:H1).symbol).to eql(SYMBOLS[:rookwhite])
+      columns.each { |column| expect(board["#{column}2".to_sym].symbol).to eql(SYMBOLS[:pawnwhite]) }
+      expect(board[:a1].symbol).to eql(SYMBOLS[:rookwhite])
+      expect(board[:b1].symbol).to eql(SYMBOLS[:knightwhite])
+      expect(board[:c1].symbol).to eql(SYMBOLS[:bishopwhite])
+      expect(board[:d1].symbol).to eql(SYMBOLS[:queenwhite])
+      expect(board[:e1].symbol).to eql(SYMBOLS[:kingwhite])
+      expect(board[:f1].symbol).to eql(SYMBOLS[:bishopwhite])
+      expect(board[:g1].symbol).to eql(SYMBOLS[:knightwhite])
+      expect(board[:h1].symbol).to eql(SYMBOLS[:rookwhite])
 
-      columns.each { |column| expect(board.cell("#{column}7".to_sym).symbol).to eql(SYMBOLS[:pawnblack]) }
-      expect(board.cell(:A8).symbol).to eql(SYMBOLS[:rookblack])
-      expect(board.cell(:B8).symbol).to eql(SYMBOLS[:knightblack])
-      expect(board.cell(:C8).symbol).to eql(SYMBOLS[:bishopblack])
-      expect(board.cell(:D8).symbol).to eql(SYMBOLS[:queenblack])
-      expect(board.cell(:E8).symbol).to eql(SYMBOLS[:kingblack])
-      expect(board.cell(:F8).symbol).to eql(SYMBOLS[:bishopblack])
-      expect(board.cell(:G8).symbol).to eql(SYMBOLS[:knightblack])
-      expect(board.cell(:H8).symbol).to eql(SYMBOLS[:rookblack])
+      columns.each { |column| expect(board["#{column}7".to_sym].symbol).to eql(SYMBOLS[:pawnblack]) }
+      expect(board[:a8].symbol).to eql(SYMBOLS[:rookblack])
+      expect(board[:b8].symbol).to eql(SYMBOLS[:knightblack])
+      expect(board[:c8].symbol).to eql(SYMBOLS[:bishopblack])
+      expect(board[:d8].symbol).to eql(SYMBOLS[:queenblack])
+      expect(board[:e8].symbol).to eql(SYMBOLS[:kingblack])
+      expect(board[:f8].symbol).to eql(SYMBOLS[:bishopblack])
+      expect(board[:g8].symbol).to eql(SYMBOLS[:knightblack])
+      expect(board[:h8].symbol).to eql(SYMBOLS[:rookblack])
     end
  end
 
- describe "#moves" do
-  it "returns a list of possible moves" do
-    knight = Piece.new(:knight, :white)
-    expect(knight.moves).to eql([[-1,2],[-2,1],[2,1],[1,2],[2,-1],[1,-2],[-2,-1],[-1,-2]])
+  describe "#[]" do
+    it "gets/sets a value at a location using chess notation" do
+      board = Board.new
+      expect(board[:e5]).to eql("")
+      board[:e5] = "test"
+      expect(board[:e5]).to eql("test")
+    end
   end
- end
 
- describe "#move_piece" do
-  it "moves knight from B1 to C3" do
-    board = Board.new
-    expect(board.cell(:B1).type).to eql(:knight)
-    knight = board.cell(:B1)
-    board.move_piece(:B1, :C3)
-    expect(board.cell(:C3)).to eql(knight)
-
+  describe "#moves" do
+    it "returns a list of possible moves" do
+      knight = Piece.new(:knight, :white)
+      expect(knight.moves).to eql([[-1,2],[-2,1],[2,1],[1,2],[2,-1],[1,-2],[-2,-1],[-1,-2]])
+    end
   end
- end
-
+  
 end

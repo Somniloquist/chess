@@ -18,6 +18,12 @@ class Board
     grid[position.first][position.last] = value
   end
 
+  def clear
+    @grid.each_with_index do |row, row_index|
+      row.each_with_index {|col, col_index| @grid[row_index][col_index] = ""}
+    end
+  end
+
   def to_s
     output = "\n   "
     grid.size.times { output << "######" }

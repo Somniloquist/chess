@@ -27,11 +27,12 @@ class Pawn < Piece
   end
 
   def moves
+    # game#get_possible_moves requires a nested array
     case color
     when :white
-      [1,0]
+      [[1,0]]
     when :black
-      [-1,0]
+      [[-1,0]]
     end
   end
 

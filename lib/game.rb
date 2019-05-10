@@ -1,12 +1,20 @@
 class Game
-  attr_reader :board
+  attr_accessor :current_player
+  attr_reader :board, :player1, :player2
   def initialize(board, player1, player2)
     @board = board
     @player1, @player2 = player1, player2
+    @current_player = player1
   end
 
-  def move_piece(starting, ending)
-    board[starting], board[ending] = board[ending], board[starting]
+  def make_play(starting, ending)
+    return false unless board[starting].class <= Piece
+    return false unless board[starting] && board[ending] # cell exists
+    return false unless board[starting].color == current_player.color
+    return false unless get_possible_moves(board[starting], starting).size > 0
+
+    move_piece(starting, ending)
+    ending
   end
 
   def valid_move?(coordinates)
@@ -20,4 +28,10 @@ class Game
     possible_moves.select! { |coordinates| valid_move?(coordinates) }
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
+
+  private
+  def move_piece(starting, ending)
+    board[starting], board[ending] = board[ending], board[starting]
+  end
+
 end

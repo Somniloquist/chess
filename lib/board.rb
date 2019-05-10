@@ -9,11 +9,13 @@ class Board
   end
 
   def [](key)
+    return nil unless positions.include?(key)
     position = chess_notation_to_coordinates(key)
     grid[position.first][position.last]
   end
 
   def []=(key, value)
+    return nil unless positions.include?(key)
     position = chess_notation_to_coordinates(key)
     grid[position.first][position.last] = value
   end
@@ -22,6 +24,10 @@ class Board
     @grid.each_with_index do |row, row_index|
       row.each_with_index {|col, col_index| @grid[row_index][col_index] = ""}
     end
+  end
+
+  def positions
+    POSITIONS
   end
 
   def to_s
@@ -45,7 +51,7 @@ class Board
 
   private
   def initialize_pieces
-    8.times { |i| grid[1][i] = Piece.new(:pawn, :white)}
+    8.times { |i| grid[1][i] = Pawn.new(:white)}
     grid[0][0] = Piece.new(:rook, :white)
     grid[0][7] = Piece.new(:rook, :white)
     grid[0][6] = Piece.new(:knight, :white)
@@ -55,7 +61,7 @@ class Board
     grid[0][4] = Piece.new(:king, :white)
     grid[0][3] = Piece.new(:queen, :white)
 
-    8.times { |i| grid[-2][i] = Piece.new(:pawn, :black)}
+    8.times { |i| grid[-2][i] = Pawn.new(:black)}
     grid[-1][0] = Piece.new(:rook, :black)
     grid[-1][7] = Piece.new(:rook, :black)
     grid[-1][6] = Piece.new(:knight, :black)

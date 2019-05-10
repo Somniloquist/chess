@@ -26,9 +26,53 @@ describe Game do
       expect(moves.sort).to eql([:a2, :b1, :b3, :b4, :b5, :b6, :b7, :b8, :c2, :d2, :e2, :f2, :g2, :h2])
     end
   end
+  
+  describe "#make_play" do
+    it "returns false if a chess piece is not chosen" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
 
-  describe "#move_piece" do
-    it "moves knight from b1 to c3" do
+      expect(game.make_play(:c3, :c4)).to eql(false)
+    end
+
+    it "returns false if a starting or ending cell doesn't exist" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      expect(game.make_play(:b8, :d9)).to eql(false)
+      expect(game.make_play(:b9, :d8)).to eql(false)
+    end
+
+    it "returns false if a piece and player color don't match" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      game.current_player = p2
+      expect(game.make_play(:a2, :a3)).to eql(false)
+    end
+
+    it "returns true if a piece and player color match" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      game.current_player = p1
+      expect(game.make_play(:a2, :a3)).to eql(:a3)
+    end
+
+    xit "returns false if a piece has no valid moves" do
+      board = Board.new
+      pawn = Pawn.new(:white)
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      game.current_player = p2
+      game.board[:a8] = pawn
+
+      expect(game.make_play(:a2, :a3)).to eql(false)
+    end
+
+    xit "moves knight from b1 to c3" do
       board = Board.new
       board.clear
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
@@ -39,12 +83,11 @@ describe Game do
       expect(board[:b1]).to eql(knight)
       expect(board[:c3]).to eql("")
 
-      game.move_piece(:b1, :c3)
+      game.make_play(:b1, :c3)
 
       expect(board[:b1]).to eql("")
       expect(board[:c3]).to eql(knight)
     end
-
   end
 
 end

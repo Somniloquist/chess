@@ -4,7 +4,7 @@ class Game
   def initialize(board, player1, player2)
     @board = board
     @player1, @player2 = player1, player2
-    @current_player = player1
+    @current_player = player1 # white player goes first
   end
 
   def make_play(starting, ending)

@@ -61,15 +61,31 @@ describe Game do
       expect(game.make_play(:a2, :a3)).to eql(:a3)
     end
 
-    xit "returns false if a piece has no valid moves" do
+   it "returns false if movement path is blocked by another piece" do
       board = Board.new
-      pawn = Pawn.new(:white)
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2)
-      game.current_player = p2
-      game.board[:a8] = pawn
-
+      game.current_player = p1
+      game.board[:a3] = Pawn.new(:black)
+      
       expect(game.make_play(:a2, :a3)).to eql(false)
+      expect(board[:a3]).to eql
+    end
+
+    it "allows knight to 'jump' over other pieces" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      game.current_player = p1
+
+      knight = board[:b1]
+      expect(board[:b1]).to eql(knight) 
+      expect(board[:c3]).to eql("")
+      
+      game.make_play(:b1, :c3)
+      
+      expect(board[:b1]).to eql("") 
+      expect(board[:c3]).to eql(knight)
     end
 
     xit "moves knight from b1 to c3" do

@@ -26,7 +26,7 @@ describe Game do
       expect(moves.sort).to eql([:a2, :b1, :b3, :b4, :b5, :b6, :b7, :b8, :c2, :d2, :e2, :f2, :g2, :h2])
     end
   end
-  
+
   describe "#make_play" do
     it "returns false if a chess piece is not chosen" do
       board = Board.new
@@ -103,6 +103,21 @@ describe Game do
 
       expect(board[:b1]).to eql("")
       expect(board[:c3]).to eql(knight)
+    end
+  end
+
+  describe "#get_move_path" do
+    it "returns path for horizontal movement" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+      
+      board[:b1] = Piece.new(:rook, :white)
+      board[:g1] = Piece.new(:knight, :white)
+      
+      expect(game.get_move_path(:b1, :h1)).to eql([[0,2],[0,3], [0,4], [0,5], [0,6], [0,7]])
+      
     end
   end
 

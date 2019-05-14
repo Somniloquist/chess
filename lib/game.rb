@@ -28,10 +28,30 @@ class Game
     possible_moves.select! { |coordinates| valid_move?(coordinates) }
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
+  
+  def get_move_path(start_cell, end_cell)
+    start_coordinate = board.chess_notation_to_coordinates(start_cell)
+    end_coordinate = board.chess_notation_to_coordinates(end_cell)
+
+    if horizonal_move?(start_cell, end_cell)
+      Array.new((start_coordinate[1] - end_coordinate[1]).abs) { |e| [start_coordinate[0], e + start_coordinate[1] + 1] }
+    elsif vertical_move?(start_cell, end_cell)
+    else # diagonal move
+    end
+  end
+
+  def horizonal_move?(start_cell, end_cell)
+    start_cell[1] == end_cell[1]
+  end
+
+  def vertical_move?(start_cell, end_cell)
+    start_cell[0] == end_cell[0]
+  end
 
   private
   def move_piece(starting, ending)
     board[starting], board[ending] = board[ending], board[starting]
   end
+
 
 end

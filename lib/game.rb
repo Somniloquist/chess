@@ -31,22 +31,33 @@ class Game
   
   def get_move_path(start_cell, end_cell)
     start_coordinate = board.chess_notation_to_coordinates(start_cell)
+    start_y, start_x = start_coordinate[0], start_coordinate[1]
     end_coordinate = board.chess_notation_to_coordinates(end_cell)
+    end_y, end_x = end_coordinate[0], end_coordinate[1]
 
-    # TODO: split this mess into smaller functions
+    # TODO: refactor this mess
     if horizonal_move?(start_cell, end_cell)
-      if start_coordinate[1] < end_coordinate[1]
-        Array.new((start_coordinate[1] - end_coordinate[1]).abs) { |i| [start_coordinate[0], i + start_coordinate[1] + 1] }
+      if start_x < end_x
+        Array.new((start_x - end_x).abs) { |i| [start_y, start_x + i + 1] }
       else
-        Array.new((end_coordinate[1] - start_coordinate[1]).abs) { |i| [end_coordinate[0], (i + end_coordinate[1] + 1)] }.reverse
+        Array.new((start_x - end_x).abs) { |i| [start_y, start_x - i - 1] }
       end
     elsif vertical_move?(start_cell, end_cell)
-      if start_coordinate[0] < end_coordinate[0]
-        Array.new((start_coordinate[0] - end_coordinate[0]).abs) { |i| [i + start_coordinate[0] + 1, start_coordinate[1]] }
+      if start_y < end_y
+        Array.new((start_y - end_y).abs) { |i| [start_y + i + 1, start_x] }
       else
-        Array.new((end_coordinate[0] - start_coordinate[0]).abs) { |i| [(i + end_coordinate[0] + 1), end_coordinate[1]] }.reverse
+        Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_x] }
       end
     else # assume diagonal move
+      if end_y && end_x > start_y && start_x
+        Array.new((start_x - end_y).abs) { |i| [start_y + i + 1, start_y + i + 1]  }
+      elsif end_y && end_x < start_y && start_x
+        Array.new((start_x - end_y).abs) { |i| [start_y - i - 1, start_y - i - 1]  }
+      elsif end_y > start_y && end_x < start_x
+        # up-left path
+      else
+        # down-right path
+      end
     end
   end
 

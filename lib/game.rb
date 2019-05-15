@@ -34,7 +34,11 @@ class Game
     end_coordinate = board.chess_notation_to_coordinates(end_cell)
 
     if horizonal_move?(start_cell, end_cell)
-      Array.new((start_coordinate[1] - end_coordinate[1]).abs) { |e| [start_coordinate[0], e + start_coordinate[1] + 1] }
+      if start_coordinate[1] < end_coordinate[1]
+        Array.new((start_coordinate[1] - end_coordinate[1]).abs) { |i| [start_coordinate[0], (i + start_coordinate[1] + 1)] }
+      else
+        Array.new((end_coordinate[1] - start_coordinate[1]).abs) { |i| [end_coordinate[0], (i + end_coordinate[1] + 1)] }.reverse
+      end
     elsif vertical_move?(start_cell, end_cell)
     else # diagonal move
     end

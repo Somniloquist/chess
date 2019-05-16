@@ -30,35 +30,23 @@ class Game
   end
   
   def get_move_path(start_cell, end_cell)
-    start_coordinate = board.chess_notation_to_coordinates(start_cell)
-    start_y, start_x = start_coordinate[0], start_coordinate[1]
-    end_coordinate = board.chess_notation_to_coordinates(end_cell)
-    end_y, end_x = end_coordinate[0], end_coordinate[1]
+    start_coordinates = board.chess_notation_to_coordinates(start_cell)
+    end_coordinates = board.chess_notation_to_coordinates(end_cell)
+    start_y, start_x = start_coordinates[0], start_coordinates[1]
+    end_y, end_x = end_coordinates[0], end_coordinates[1]
 
-    # TODO: refactor this mess
     if horizonal_move?(start_cell, end_cell)
-      if start_x < end_x
-        Array.new((start_x - end_x).abs) { |i| [start_y, start_x + i + 1] }
-      else
-        Array.new((start_x - end_x).abs) { |i| [start_y, start_x - i - 1] }
-      end
+      build_horizonal_path(start_y, start_x, end_y, end_x)
     elsif vertical_move?(start_cell, end_cell)
-      if start_y < end_y
-        Array.new((start_y - end_y).abs) { |i| [start_y + i + 1, start_x] }
-      else
-        Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_x] }
-      end
-    else # assume diagonal move
-      if end_y > start_y && end_x < start_x
-        Array.new((start_y - end_y ).abs) { |i| [start_y + i + 1, start_x - i - 1]  }
-      elsif end_y < start_y && end_x > start_x
-        Array.new((start_y - end_y ).abs) { |i| [start_y - i - 1, start_x + i + 1]  }
-      elsif end_y && end_x > start_y && start_x
-        Array.new((start_x - end_x).abs) { |i| [start_y + i + 1, start_y + i + 1]  }
-      elsif end_y && end_x < start_y && start_x
-        Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_y - i - 1]  }
-      end
+      build_vertical_path(start_y, start_x, end_y, end_x)
+    else
+      build_diagonal_path(start_y, start_x, end_y, end_x)
     end
+  end
+  
+  private
+  def move_piece(starting, ending)
+    board[starting], board[ending] = board[ending], board[starting]
   end
 
   def horizonal_move?(start_cell, end_cell)
@@ -69,10 +57,32 @@ class Game
     start_cell[0] == end_cell[0]
   end
 
-  private
-  def move_piece(starting, ending)
-    board[starting], board[ending] = board[ending], board[starting]
+  def build_horizonal_path(start_y, start_x, end_y, end_x)
+    if start_x < end_x
+      Array.new((start_x - end_x).abs) { |i| [start_y, start_x + i + 1] }
+    else
+      Array.new((start_x - end_x).abs) { |i| [start_y, start_x - i - 1] }
+    end
   end
 
+  def build_vertical_path(start_y, start_x, end_y, end_x)
+    if start_y < end_y
+      Array.new((start_y - end_y).abs) { |i| [start_y + i + 1, start_x] }
+    else
+      Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_x] }
+    end
+  end
+
+  def build_diagonal_path(start_y, start_x, end_y, end_x)
+    if end_y > start_y && end_x < start_x
+      Array.new((start_y - end_y ).abs) { |i| [start_y + i + 1, start_x - i - 1]  }
+    elsif end_y < start_y && end_x > start_x
+      Array.new((start_y - end_y ).abs) { |i| [start_y - i - 1, start_x + i + 1]  }
+    elsif end_y && end_x > start_y && start_x
+      Array.new((start_x - end_x).abs) { |i| [start_y + i + 1, start_y + i + 1]  }
+    elsif end_y && end_x < start_y && start_x
+      Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_y - i - 1]  }
+    end
+  end
 
 end

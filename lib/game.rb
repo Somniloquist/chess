@@ -49,14 +49,14 @@ class Game
         Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_x] }
       end
     else # assume diagonal move
-      if end_y && end_x > start_y && start_x
-        Array.new((start_x - end_y).abs) { |i| [start_y + i + 1, start_y + i + 1]  }
+      if end_y > start_y && end_x < start_x
+        Array.new((start_y - end_y ).abs) { |i| [start_y + i + 1, start_x - i - 1]  }
+      elsif end_y < start_y && end_x > start_x
+        Array.new((start_y - end_y ).abs) { |i| [start_y - i - 1, start_x + i + 1]  }
+      elsif end_y && end_x > start_y && start_x
+        Array.new((start_x - end_x).abs) { |i| [start_y + i + 1, start_y + i + 1]  }
       elsif end_y && end_x < start_y && start_x
-        Array.new((start_x - end_y).abs) { |i| [start_y - i - 1, start_y - i - 1]  }
-      elsif end_y > start_y && end_x < start_x
-        # up-left path
-      else
-        # down-right path
+        Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_y - i - 1]  }
       end
     end
   end

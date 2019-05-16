@@ -152,6 +152,8 @@ describe Game do
       
       expect(game.get_move_path(:b2, :e5)).to eql([[2,2], [3,3], [4,4]])
       expect(game.get_move_path(:e5, :b2)).to eql([[3,3], [2,2], [1,1]])
+      expect(game.get_move_path(:f2, :c5)).to eql([[2,4], [3,3], [4,2]])
+      expect(game.get_move_path(:c5, :f2)).to eql([[3,3], [2,4], [1,5]])
     end
   end
 

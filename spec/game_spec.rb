@@ -113,12 +113,50 @@ describe Game do
       expect(board[:c3]).to eql(knight)
     end
 
-    # it "returns false /does not allow move if path if blocked" do
-    #   board = Board.new
-    #   p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
-    #   game = Game.new(board, p1, p2)
-    # end
+    it "moves pawn from a7 to a6" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      game.current_player = p2
+      
+      pawn_black = Pawn.new(:black)
+      board[:a7] = pawn_black
 
+      game.make_play(:a7, :a8) #illegal move
+      expect(board[:a7]).to eql(pawn_black)
+      expect(board[:a8]).to eql("")
+
+      game.make_play(:a7, :a3) #illegal move
+      expect(board[:a7]).to eql(pawn_black)
+      expect(board[:a3]).to eql("")
+
+      game.make_play(:a7, :a6) # legal move
+      expect(board[:a7]).to eql("")
+      expect(board[:a6]).to eql(pawn_black)
+    end
+
+    it "moves rook from c5 to f5" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      game.current_player = p2
+
+      rook_black = Piece.new(:rook, :black)
+      board[:c5] = rook_black
+      board[:g5] = Piece.new(:rook, :white)
+
+      game.make_play(:c5, :h5) #illegal move
+      expect(board[:c5]).to eql(rook_black)
+      expect(board[:h5]).to eql("")
+      game.make_play(:c5, :d4) #illegal move
+      expect(board[:c5]).to eql(rook_black)
+      expect(board[:d4]).to eql("")
+      game.make_play(:c5, :f5) #legal move
+      expect(board[:c5]).to eql("")
+      expect(board[:f5]).to eql(rook_black)
+    end
   end
 
   # # TEMPORARY TESTS, TEST RESULTS FOR PRIVATE FUNCTIONS

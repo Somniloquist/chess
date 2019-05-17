@@ -20,7 +20,8 @@ class Game
     return false unless board[start_cell].class <= Piece
     return false unless board[start_cell] && board[end_cell] # cell exists
     return false unless board[start_cell].color == current_player.color
-    return false unless get_possible_moves(board[start_cell], start_cell).size > 0
+    possible_moves = get_possible_moves(board[start_cell], start_cell)
+    return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
 
     # Knight can 'jump' over other pieces
     unless board[start_cell].type == :knight

@@ -6,15 +6,6 @@ class Game
     @player1, @player2 = player1, player2
     @current_player = player1 # white player goes first
   end
-
-  # returns possible moves for a piece, does not check for obstructions
-  def get_possible_moves(piece, position)
-    position = board.chess_notation_to_coordinates(position)
-    possible_moves = piece.moves[0..-1] #duplicate piece move list
-    possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
-    possible_moves.select! { |coordinates| valid_move?(coordinates) }
-    possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
-  end
   
   def make_play(start_cell, end_cell)
     return false unless board[start_cell].class <= Piece
@@ -32,6 +23,33 @@ class Game
     end_cell
   end
 
+  # returns direct path(all cells) between start(exclusive) and end_cell(inclusive)
+  def get_move_path(start_cell, end_cell)
+    start_coordinates = board.chess_notation_to_coordinates(start_cell)
+    end_coordinates = board.chess_notation_to_coordinates(end_cell)
+    start_y, start_x = start_coordinates[0], start_coordinates[1]
+    end_y, end_x = end_coordinates[0], end_coordinates[1]
+    path = []
+
+    if horizonal_move?(start_cell, end_cell)
+      path = build_horizonal_path(start_y, start_x, end_y, end_x)
+    elsif vertical_move?(start_cell, end_cell)
+      path = build_vertical_path(start_y, start_x, end_y, end_x)
+    else
+      path = build_diagonal_path(start_y, start_x, end_y, end_x)
+    end
+    path.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
+  end
+
+  # returns possible moves for a piece, does not check for obstructions
+  def get_possible_moves(piece, position)
+    position = board.chess_notation_to_coordinates(position)
+    possible_moves = piece.moves[0..-1] #duplicate piece move list
+    possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
+    possible_moves.select! { |coordinates| valid_move?(coordinates) }
+    possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
+  end
+  
   private
   def move_piece(starting, ending)
     board[starting], board[ending] = board[ending], board[starting]
@@ -61,18 +79,6 @@ class Game
     end
   end
 
-  def build_diagonal_path(start_y, start_x, end_y, end_x)
-    if end_y > start_y && end_x < start_x
-      Array.new((start_y - end_y ).abs) { |i| [start_y + i + 1, start_x - i - 1]  }
-    elsif end_y < start_y && end_x > start_x
-      Array.new((start_y - end_y ).abs) { |i| [start_y - i - 1, start_x + i + 1]  }
-    elsif end_y && end_x > start_y && start_x
-      Array.new((start_x - end_x).abs) { |i| [start_y + i + 1, start_y + i + 1]  }
-    elsif end_y && end_x < start_y && start_x
-      Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_y - i - 1]  }
-    end
-  end
-
   def move_obstructed?(start_cell, end_cell)
     path = get_move_path(start_cell, end_cell)
     path.each { |cell| return true unless board.empty?(cell) }
@@ -83,23 +89,15 @@ class Game
     coordinates.all? {|value| value.between?(0,7)}
   end
 
-  # returns all cells a piece may move between point a and point b
-  def get_move_path(start_cell, end_cell)
-    start_coordinates = board.chess_notation_to_coordinates(start_cell)
-    end_coordinates = board.chess_notation_to_coordinates(end_cell)
-    start_y, start_x = start_coordinates[0], start_coordinates[1]
-    end_y, end_x = end_coordinates[0], end_coordinates[1]
-    path = []
-
-    if horizonal_move?(start_cell, end_cell)
-      path = build_horizonal_path(start_y, start_x, end_y, end_x)
-    elsif vertical_move?(start_cell, end_cell)
-      path = build_vertical_path(start_y, start_x, end_y, end_x)
-    else
-      path = build_diagonal_path(start_y, start_x, end_y, end_x)
+  def build_diagonal_path(start_y, start_x, end_y, end_x)
+    if end_y > start_y && end_x < start_x
+      Array.new((start_y - end_y ).abs) { |i| [start_y + i + 1, start_x - i - 1]  }
+    elsif end_y < start_y && end_x > start_x
+      Array.new((start_y - end_y ).abs) { |i| [start_y - i - 1, start_x + i + 1]  }
+    elsif end_y && end_x > start_y && start_x
+      Array.new((start_x - end_x).abs) { |i| [start_y + i + 1, start_x + i + 1]  }
+    elsif end_y && end_x < start_y && start_x
+      Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_x - i - 1]  }
     end
-    path.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
-
-
 end

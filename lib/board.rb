@@ -20,6 +20,10 @@ class Board
     grid[position.first][position.last] = value
   end
 
+  def empty?(cell)
+    self[cell] == "" ? true : false
+  end
+
   def clear
     @grid.each_with_index do |row, row_index|
       row.each_with_index {|col, col_index| @grid[row_index][col_index] = ""}

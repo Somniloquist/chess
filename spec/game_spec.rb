@@ -157,6 +157,19 @@ describe Game do
       expect(board[:c5]).to eql("")
       expect(board[:f5]).to eql(rook_black)
     end
+
+    it "does not allow move to space occupied by friendly piece" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      rook_white = Piece.new(:rook, :white)
+      pawn_white =  board[:a2]
+      board[:a3] = rook_white
+
+      game.make_play(:a3, :a2)
+      expect(board[:a2]).to eql(pawn_white)
+      expect(board[:a3]).to eql(rook_white)
+    end
   end
 
   # # TEMPORARY TESTS, TEST RESULTS FOR PRIVATE FUNCTIONS

@@ -170,6 +170,19 @@ describe Game do
       expect(board[:a2]).to eql(pawn_white)
       expect(board[:a3]).to eql(rook_white)
     end
+
+    it "allows double move if pawn has not yet moved" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      pawn_white = board[:a2]
+      game.make_play(:a2, :a4)
+      expect(board[:a4]).to eql(pawn_white)
+      game.make_play(:a4, :a6)
+      expect(board[:a4]).to eql(pawn_white)
+      expect(board[:a6]).to eql("")
+    end
   end
 
   describe "#get_move_path" do
@@ -179,7 +192,6 @@ describe Game do
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2) 
       
-      # expect(game.get_move_path(:b1, :h1)).to eql([[0,2],[0,3], [0,4], [0,5], [0,6], [0,7]])
       expect(game.get_move_path(:b1, :h1)).to eql([:c1, :d1, :e1, :f1, :g1, :h1])
     end
 
@@ -189,7 +201,6 @@ describe Game do
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2) 
 
-      # expect(game.get_move_path(:h3, :b3)).to eql([[2,6], [2,5], [2,4], [2,3], [2,2], [2,1]])
       expect(game.get_move_path(:h3, :b3)).to eql([:g3, :f3, :e3, :d3, :c3, :b3])
     end
 
@@ -199,7 +210,6 @@ describe Game do
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2) 
       
-      # expect(game.get_move_path(:b2, :b6)).to eql([[2,1],[3,1],[4,1],[5,1]])
       expect(game.get_move_path(:b2, :b6)).to eql([:b3, :b4, :b5, :b6])
     end
 
@@ -209,7 +219,6 @@ describe Game do
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2) 
       
-      # expect(game.get_move_path(:e6, :e2)).to eql([[4,4], [3,4], [2,4], [1,4]])
       expect(game.get_move_path(:e6, :e2)).to eql([:e5, :e4, :e3, :e2])
     end
 

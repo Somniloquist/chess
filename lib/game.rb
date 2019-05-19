@@ -44,12 +44,15 @@ class Game
   # returns possible moves for a piece, does not check for obstructions
   def get_possible_moves(piece, position)
     position = board.chess_notation_to_coordinates(position)
+
     possible_moves = piece.moves[0..-1] #duplicate piece move list
+    add_extra_pawn_move!(possible_moves, piece.color, position) if piece.type == :pawn
     possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
     possible_moves.select! { |coordinates| valid_move?(coordinates) }
+
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
-  
+
   private
   def move_piece(starting, ending)
     board[starting], board[ending] = board[ending], board[starting]
@@ -100,4 +103,15 @@ class Game
       Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_x - i - 1]  }
     end
   end
+
+  def add_extra_pawn_move!(possible_moves, color, position)
+    return possible_moves unless position[0] == 1 || position[0] == 6
+    case color
+    when :white
+      possible_moves << [2,0]
+    when :black
+      possible_moves << [-2,0]
+    end
+  end
+  
 end

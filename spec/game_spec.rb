@@ -25,6 +25,37 @@ describe Game do
       moves = game.get_possible_moves(rook, :b2)
       expect(moves.sort).to eql([:a2, :b1, :b3, :b4, :b5, :b6, :b7, :b8, :c2, :d2, :e2, :f2, :g2, :h2])
     end
+
+    it "returns a list of valid moves for a pawn(white)" do
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      board = Board.new
+      game = Game.new(board, p1, p2)
+
+      pawn_white = board[:a2]
+      moves = game.get_possible_moves(pawn_white, :a2)
+      expect(moves.sort).to eql([:a3, :a4])
+
+      game.make_play(:a2, :a4)
+
+      moves = game.get_possible_moves(pawn_white, :a4)
+      expect(moves.sort).to eql([:a5])
+    end
+
+    it "returns a list of valid moves for a pawn(black)" do
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      board = Board.new
+      game = Game.new(board, p1, p2)
+      game.current_player = p2
+
+      pawn_black = board[:a7]
+      moves = game.get_possible_moves(pawn_black, :a7)
+      expect(moves.sort).to eql([:a5, :a6])
+
+      game.make_play(:a7, :a5)
+
+      moves = game.get_possible_moves(pawn_black, :a5)
+      expect(moves.sort).to eql([:a4])
+    end
   end
 
   describe "#make_play" do
@@ -176,12 +207,22 @@ describe Game do
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2)
 
+      # white pawn
       pawn_white = board[:a2]
       game.make_play(:a2, :a4)
       expect(board[:a4]).to eql(pawn_white)
       game.make_play(:a4, :a6)
       expect(board[:a4]).to eql(pawn_white)
       expect(board[:a6]).to eql("")
+
+      # black pawn
+      game.current_player = p2
+      pawn_black = board[:a7]
+      game.make_play(:a7, :a5)
+      expect(board[:a5]).to eql(pawn_black)
+      game.make_play(:a5, :a3)
+      expect(board[:a5]).to eql(pawn_black)
+      expect(board[:a3]).to eql("")
     end
   end
 

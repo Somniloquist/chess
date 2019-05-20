@@ -255,6 +255,29 @@ describe Game do
       expect(board[:a3]).to eql(pawn_black)
     end
 
+    it "pawn captures diagonally (white pawn)" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      pawn_white1 = Pawn.new(:white)
+      pawn_white2 = Pawn.new(:white)
+      pawn_black1 = board[:a7]
+      pawn_black2 = board[:d7]
+      board[:b6] = pawn_white1
+      board[:c6] = pawn_white2
+
+      expect(board[:a7]).to eql(pawn_black1)
+      game.make_play(:b6, :a7)
+      expect(board[:a7]).to eql(pawn_white1)
+      expect(board[:b6]).to eql("")
+
+      expect(board[:d7]).to eql(pawn_black2)
+      game.make_play(:c6, :d7)
+      expect(board[:d7]).to eql(pawn_white1)
+      expect(board[:c6]).to eql("")
+    end
+
     it "non-knights cannot capture 'over' other pieces" do
       board = Board.new
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
@@ -269,7 +292,6 @@ describe Game do
       game.make_play(:a3, :a8)
       expect(board[:a3]).to eql(rook_white)
       expect(board[:a8]).to eql(rook_black)
-
     end
 
   end

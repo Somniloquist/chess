@@ -248,9 +248,28 @@ describe Game do
       pawn_black = Pawn.new(:black)
       board[:a3] = pawn_black
 
+      expect(board[:a2]).to eql(pawn_white)
+      expect(board[:a3]).to eql(pawn_black)
       game.make_play(:a2, :a3)
       expect(board[:a2]).to eql(pawn_white)
       expect(board[:a3]).to eql(pawn_black)
+    end
+
+    it "non-knights cannot capture 'over' other pieces" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      rook_white = Piece.new(:rook, :white)
+      rook_black = board[:a8]
+      board[:a3] = rook_white
+
+      expect(board[:a3]).to eql(rook_white)
+      expect(board[:a8]).to eql(rook_black)
+      game.make_play(:a3, :a8)
+      expect(board[:a3]).to eql(rook_white)
+      expect(board[:a8]).to eql(rook_black)
+
     end
 
   end

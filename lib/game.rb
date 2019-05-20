@@ -14,13 +14,13 @@ class Game
     possible_moves = get_possible_moves(board[start_cell], start_cell)
     return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
 
+    # Knight can 'jump' over other pieces
+    return false if move_obstructed?(start_cell, end_cell) unless board[start_cell].type == :knight
+
     if contains_enemy_piece?(end_cell)
-      capture_piece(start_cell, end_cell) unless board[start_cell].type == :pawn
+      return false if board[start_cell].type == :pawn
+      capture_piece(start_cell, end_cell)
     else
-      # Knight can 'jump' over other pieces
-      unless board[start_cell].type == :knight || contains_enemy_piece?(end_cell)
-        return false if move_obstructed?(start_cell, end_cell)
-      end
       move_piece(start_cell, end_cell)
     end
 
@@ -99,7 +99,8 @@ class Game
   end
 
   def move_obstructed?(start_cell, end_cell)
-    path = get_move_path(start_cell, end_cell)
+    # disregard the destination cell when the intent is to capture an enemy piece
+    contains_enemy_piece?(end_cell) ? path = get_move_path(start_cell, end_cell)[0...-1] : path = get_move_path(start_cell, end_cell)
     path.each { |cell| return true unless board.empty?(cell) }
     false
   end

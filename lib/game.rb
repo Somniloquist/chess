@@ -14,12 +14,16 @@ class Game
     possible_moves = get_possible_moves(board[start_cell], start_cell)
     return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
 
-    # Knight can 'jump' over other pieces
-    unless board[start_cell].type == :knight
-      return false if move_obstructed?(start_cell, end_cell)
+    if contains_enemy_piece?(end_cell)
+      capture_piece(start_cell, end_cell) unless board[start_cell].type == :pawn
+    else
+      # Knight can 'jump' over other pieces
+      unless board[start_cell].type == :knight || contains_enemy_piece?(end_cell)
+        return false if move_obstructed?(start_cell, end_cell)
+      end
+      move_piece(start_cell, end_cell)
     end
 
-    move_piece(start_cell, end_cell)
     end_cell
   end
 
@@ -54,8 +58,20 @@ class Game
   end
 
   private
+  def contains_piece?(cell)
+    board[cell].class <= Piece ? true : false
+  end
+
+  def contains_enemy_piece?(cell)
+    board[cell].class <= Piece && board[cell].color != current_player.color ? true : false
+  end
+
   def move_piece(starting, ending)
     board[starting], board[ending] = board[ending], board[starting]
+  end
+
+  def capture_piece(starting, ending)
+    board[starting], board[ending] = "", board[starting]
   end
 
   def horizonal_move?(start_cell, end_cell)

@@ -95,11 +95,11 @@ describe Game do
       board = Board.new
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2)
-      pawn_black = Pawn.new(:black)
-      game.board[:a3] = pawn_black
+      king_white = Piece.new(:king, :white)
+      game.board[:a3] = king_white
       
       expect(game.make_play(:a2, :a3)).to eql(false)
-      expect(board[:a3]).to eql(pawn_black)
+      expect(board[:a3]).to eql(king_white)
     end
 
     it "returns false / does not allow move if path if blocked (queen)" do
@@ -225,7 +225,7 @@ describe Game do
       expect(board[:a3]).to eql("")
     end
 
-    it "captures piece if destination cell contains an enemy piece" do
+    it "white rook captures black pawn" do
       board = Board.new
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2)
@@ -237,6 +237,20 @@ describe Game do
       expect(board[:a7]).to eql(pawn_black)
       game.make_play(:a3, :a7)
       expect(board[:a7]).to eql(rook_white)
+    end
+
+    it "pawn cannot capture piece directly in front" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      pawn_white = board[:a2]
+      pawn_black = Pawn.new(:black)
+      board[:a3] = pawn_black
+
+      game.make_play(:a2, :a3)
+      expect(board[:a2]).to eql(pawn_white)
+      expect(board[:a3]).to eql(pawn_black)
     end
 
   end

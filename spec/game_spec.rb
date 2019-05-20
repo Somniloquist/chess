@@ -224,6 +224,21 @@ describe Game do
       expect(board[:a5]).to eql(pawn_black)
       expect(board[:a3]).to eql("")
     end
+
+    it "captures piece if destination cell contains an enemy piece" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      rook_white = Piece.new(:rook, :white)
+      pawn_black = board[:a7]
+      board[:a3] = rook_white
+
+      expect(board[:a7]).to eql(pawn_black)
+      game.make_play(:a3, :a7)
+      expect(board[:a7]).to eql(rook_white)
+    end
+
   end
 
   describe "#get_move_path" do

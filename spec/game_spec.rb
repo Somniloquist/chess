@@ -274,8 +274,32 @@ describe Game do
 
       expect(board[:d7]).to eql(pawn_black2)
       game.make_play(:c6, :d7)
-      expect(board[:d7]).to eql(pawn_white1)
+      expect(board[:d7]).to eql(pawn_white2)
       expect(board[:c6]).to eql("")
+    end
+
+    it "pawn captures diagonally (black pawn)" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+      game.current_player = p2
+
+      pawn_black1 = Pawn.new(:black)
+      pawn_black2 = Pawn.new(:black)
+      pawn_white1 = board[:a2]
+      pawn_white2 = board[:d2]
+      board[:b3] = pawn_black1
+      board[:c3] = pawn_black2
+
+      expect(board[:a2]).to eql(pawn_white1)
+      game.make_play(:b3, :a2)
+      expect(board[:a2]).to eql(pawn_black1)
+      expect(board[:b3]).to eql("")
+
+      expect(board[:d2]).to eql(pawn_white2)
+      game.make_play(:c3, :d2)
+      expect(board[:d2]).to eql(pawn_black2)
+      expect(board[:c3]).to eql("")
     end
 
     it "non-knights cannot capture 'over' other pieces" do

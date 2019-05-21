@@ -36,4 +36,13 @@ class Pawn < Piece
     end
   end
 
+  def capture_moves
+    case color
+    when :white
+      [[1,1], [1,-1]]
+    when :black
+      [[-1,-1], [-1, 1]]
+    end
+  end
+
 end

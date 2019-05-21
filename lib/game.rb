@@ -11,14 +11,13 @@ class Game
     return false unless board[start_cell].class <= Piece
     return false unless board[start_cell] && board[end_cell] # cell exists
     return false unless board[start_cell].color == current_player.color
-    possible_moves = get_possible_moves(board[start_cell], start_cell)
+    possible_moves = get_possible_moves(board[start_cell], start_cell, end_cell)
     return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
 
     # Knight can 'jump' over other pieces
     return false if move_obstructed?(start_cell, end_cell) unless board[start_cell].type == :knight
 
     if contains_enemy_piece?(end_cell)
-      return false if board[start_cell].type == :pawn
       capture_piece(start_cell, end_cell)
     else
       move_piece(start_cell, end_cell)
@@ -46,11 +45,15 @@ class Game
   end
 
   # returns possible moves for a piece, does not check for obstructions
-  def get_possible_moves(piece, position)
+  def get_possible_moves(piece, position, end_cell = nil)
     position = board.chess_notation_to_coordinates(position)
 
-    possible_moves = piece.moves[0..-1] #duplicate piece move list
-    add_extra_pawn_move!(possible_moves, piece.color, position) if piece.type == :pawn
+    if piece.type == :pawn && contains_enemy_piece?(end_cell)
+      possible_moves = piece.capture_moves[0..-1] #duplicate piece move list
+    else
+      possible_moves = piece.moves[0..-1] #duplicate piece move list
+      add_extra_pawn_move!(possible_moves, piece.color, position) if piece.type == :pawn
+    end
     possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
     possible_moves.select! { |coordinates| valid_move?(coordinates) }
 

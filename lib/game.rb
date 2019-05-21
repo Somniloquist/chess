@@ -133,5 +133,27 @@ class Game
       possible_moves << [-2,0]
     end
   end
+
+  def promotion_possible?(cell)
+    board[cell].type == :pawn && (cell[1] == "1" || cell[1] == "8")
+  end
+
+  def get_promotion_choice
+    promotion_choices = [:queen, :rook, :bishop, :knight].freeze
+    puts("Your pawn is ready for promotion. Choose a new piece from the list (select a number).")
+    puts("[0] => queen, [1] => rook, [2] => bishop, [3] => knight")
+    loop do
+      print(" >> ")
+      choice = gets.chomp.to_i
+      return promotion_choices[choice] if choice.between?(0, promotion_choices.size - 1)
+    end
+  end
+
+  # 'promotion' should be a symbol (ie. :queen, :knight etc.)
+  def promote_pawn(cell, promotion)
+    pawn = board[cell]
+    board[cell] = Piece.new(promotion, pawn.color)
+  end
+
   
 end

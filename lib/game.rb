@@ -60,6 +60,25 @@ class Game
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
 
+  def king_in_check?(location_of_king, paths)
+    paths.include?(location_of_king) ? true : false
+  end
+
+  # get chess notation location of the king (of provided color)
+  def get_king_location(color)
+    board.grid.each_with_index do |row, y|
+      row.each_with_index do |cell, x|
+        if cell.class <= Piece
+          return board.coordinates_to_chess_notation([y,x]) if cell.type == :king && cell.color == color
+        end
+      end
+    end
+  end
+
+  def get_all_possible_paths(color)
+
+  end
+
   private
   def contains_piece?(cell)
     board[cell].class <= Piece ? true : false

@@ -371,4 +371,31 @@ describe Game do
     end
   end
 
+  describe "#king_in_check?" do
+    it "returns true when king is in another piece's path" do
+        board = Board.new
+        board.clear
+        p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+        game = Game.new(board, p1, p2) 
+
+        expect(game.king_in_check?(:a1, [:a5, :c5, :d4, :c1, :a1])).to eql(true)
+    end
+  end
+
+  describe "get_king_location" do
+    it "returns location of king of specified color" do
+        board = Board.new
+        p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+        game = Game.new(board, p1, p2) 
+
+        expect(game.get_king_location(:white)).to eql(:e1)
+        expect(game.get_king_location(:black)).to eql(:e8)
+
+        board.clear
+        board[:f3] = Piece.new(:king, :white)
+        expect(game.get_king_location(:white)).to eql(:f3)
+
+    end
+  end
+
 end

@@ -19,7 +19,7 @@ class Board
     position = chess_notation_to_coordinates(key)
     grid[position.first][position.last] = value
   end
-
+  
   def empty?(cell)
     self[cell] == "" ? true : false
   end

@@ -378,7 +378,13 @@ describe Game do
         p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
         game = Game.new(board, p1, p2) 
 
-        expect(game.king_in_check?(:a1, [:a5, :c5, :d4, :c1, :a1])).to eql(true)
+        board[:a1] = Piece.new(:king, :white)
+        board[:b3] = Piece.new(:knight, :black)
+
+        king_location = game.get_king_location(:white)
+        enemy_paths = game.get_all_possible_paths(:black)
+
+        expect(game.king_in_check?(king_location, enemy_paths)).to eql(true)
     end
   end
 

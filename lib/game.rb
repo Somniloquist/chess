@@ -61,6 +61,7 @@ class Game
   end
 
   def king_in_check?(location_of_king, paths)
+    return false if paths.nil?
     paths.include?(location_of_king) ? true : false
   end
 
@@ -76,7 +77,27 @@ class Game
   end
 
   def get_all_possible_paths(color)
+    paths = []
+    board.grid.each_with_index do |row, y|
+      row.each_with_index do |cell, x|
+        if cell.class <= Piece
+          next if cell.color != color
+          cell_location = board.coordinates_to_chess_notation([y,x])
+          moves = get_possible_moves(cell, cell_location)
 
+          if cell.type == :knight
+            paths << moves
+          else
+            moves.each do |move|
+              paths << get_move_path(cell_location, move)
+            end
+          end
+
+        end
+      end
+    end
+
+    paths.flatten.uniq
   end
 
   private

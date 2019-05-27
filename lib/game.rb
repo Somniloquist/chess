@@ -60,7 +60,8 @@ class Game
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
 
-  #
+  # Workaround used to find checkmate (get_all_possible_moves requires a destination cell
+  # to determine if the pawn is capturing)
   def get_possible_pawn_capture_moves(piece, position)
     position = board.chess_notation_to_coordinates(position)
 

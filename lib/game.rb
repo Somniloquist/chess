@@ -60,6 +60,17 @@ class Game
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
 
+  #
+  def get_possible_pawn_capture_moves(piece, position)
+    position = board.chess_notation_to_coordinates(position)
+
+    possible_moves = piece.capture_moves[0..-1] #duplicate piece move list
+    possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
+    possible_moves.select! { |coordinates| valid_move?(coordinates) }
+
+    possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
+  end
+
   def king_in_check?(location_of_king, paths)
     return false if paths.nil?
     paths.include?(location_of_king) ? true : false
@@ -78,14 +89,19 @@ class Game
 
   def get_all_possible_paths(color)
     paths = []
+    moves = []
 
     board.grid.each_with_index do |row, y|
       row.each_with_index do |cell, x|
         if cell.class <= Piece
           next if cell.color != color
           cell_location = board.coordinates_to_chess_notation([y,x])
-          moves = get_possible_moves(cell, cell_location)
-          cell.type == :knight ? paths << moves : moves.each { |move | paths << get_move_path(cell_location, move) }
+          if cell.type == :pawn
+            moves = get_possible_pawn_capture_moves(cell, cell_location)
+          else
+            moves = get_possible_moves(cell, cell_location)
+          end
+          cell.type == :knight ? paths << moves : moves.each { |move | paths << get_move_path(cell_location, move) unless move_obstructed?(cell_location, move) }
         end
       end
     end
@@ -150,9 +166,9 @@ class Game
       Array.new((start_y - end_y ).abs) { |i| [start_y + i + 1, start_x - i - 1]  }
     elsif end_y < start_y && end_x > start_x
       Array.new((start_y - end_y ).abs) { |i| [start_y - i - 1, start_x + i + 1]  }
-    elsif end_y && end_x > start_y && start_x
+    elsif end_y > start_y && end_x > start_x
       Array.new((start_x - end_x).abs) { |i| [start_y + i + 1, start_x + i + 1]  }
-    elsif end_y && end_x < start_y && start_x
+    elsif end_y < start_y && end_x < start_x
       Array.new((start_y - end_y).abs) { |i| [start_y - i - 1, start_x - i - 1]  }
     end
   end

@@ -386,6 +386,20 @@ describe Game do
 
         expect(game.king_in_check?(king_location, enemy_paths)).to eql(true)
     end
+    
+    it "returns false when enemy's capture path is blocked" do
+        board = Board.new
+        p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+        game = Game.new(board, p1, p2) 
+
+        board[:e1] = ""
+        board[:e5] = Piece.new(:king, :white)
+
+        king_location = game.get_king_location(:white)
+        enemy_paths = game.get_all_possible_paths(:black)
+
+        expect(game.king_in_check?(king_location, enemy_paths)).to eql(false)
+    end
   end
 
   describe "get_king_location" do

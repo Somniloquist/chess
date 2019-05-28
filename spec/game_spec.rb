@@ -450,6 +450,22 @@ describe Game do
       king_moves = game.trim_king_moves(king_moves, enemy_moves)
       expect(king_moves).to eql([])
     end
+
+    it "returns an empty array when there are no safe moves" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+
+      board[:e1] = Piece.new(:king, :white)
+      board[:a1] = Piece.new(:rook, :black)
+      board[:a2] = Piece.new(:rook, :black)
+
+      enemy_moves = game.get_all_possible_paths(:black)
+      king_moves = game.get_possible_moves(board[:e1], :e1)
+      king_moves = game.trim_king_moves(king_moves, enemy_moves)
+      expect(king_moves).to eql([])
+    end
   end
 
   describe "#checkmate" do
@@ -468,7 +484,7 @@ describe Game do
       expect(game.checkmate?).to eql(true)
    end
 
-   it "returns false when king is in check but still has legal moves" do
+    it "returns false when king is in check but still has legal moves" do
       board = Board.new
       board.clear
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
@@ -480,7 +496,7 @@ describe Game do
       board[:f4] = Piece.new(:rook, :black)
 
       expect(game.checkmate?).to eql(false)
-   end
+    end
   end
 
 end

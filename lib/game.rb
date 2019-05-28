@@ -130,7 +130,7 @@ class Game
     king_in_check?(king, enemy_paths) && king_moves.size == 0 ? true : false
   end
 
-  # private
+  private
   def get_enemy_color
     current_player.color == :white ? :black : :white
   end
@@ -180,13 +180,15 @@ class Game
   end
 
   def move_obstructed?(start_cell, end_cell, check=false)
+    # some excepting when testing for checkmate
     if check
       contains_piece?(end_cell) ? path = get_move_path(start_cell, end_cell)[0...-1] : path = get_move_path(start_cell, end_cell)
+      path.each { |cell| return true unless board.empty?(cell) || board[cell].type == :king }
     else
       # disregard the destination cell when the intent is to capture an enemy piece
       contains_enemy_piece?(end_cell) ? path = get_move_path(start_cell, end_cell)[0...-1] : path = get_move_path(start_cell, end_cell)
+      path.each { |cell| return true unless board.empty?(cell) }
     end
-    path.each { |cell| return true unless board.empty?(cell) }
     false
   end
 

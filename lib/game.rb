@@ -110,6 +110,10 @@ class Game
     paths.flatten.uniq
   end
 
+  def trim_king_moves(king_moves, enemy_moves)
+    king_moves.select { |king_move| !enemy_moves.include?(king_move) }
+  end
+
   private
   def contains_piece?(cell)
     board[cell].class <= Piece ? true : false

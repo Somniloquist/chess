@@ -402,7 +402,7 @@ describe Game do
     end
   end
 
-  describe "get_king_location" do
+  describe "#get_king_location" do
     it "returns location of king of specified color" do
         board = Board.new
         p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
@@ -414,8 +414,43 @@ describe Game do
         board.clear
         board[:f3] = Piece.new(:king, :white)
         expect(game.get_king_location(:white)).to eql(:f3)
-
     end
   end
+
+  describe "#trim_king_moves!" do
+    it "returns an array with moves that would put the king in check removed" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+
+      board[:e1] = ""
+      board[:e5] = Piece.new(:king, :white)
+      board[:f3] = Piece.new(:rook, :black)
+
+      enemy_moves = game.get_all_possible_paths(:black)
+      king_moves = game.get_possible_moves(board[:e5], :e5)
+      king_moves = game.trim_king_moves(king_moves, enemy_moves)
+      expect(king_moves).to eql([:e4, :d4, :d5])
+    end
+
+    it "returns an empty array with there are no safe moves" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+
+      board[:e1] = ""
+      board[:e5] = Piece.new(:king, :white)
+      board[:d6] = Piece.new(:rook, :black)
+      board[:d4] = Piece.new(:rook, :black)
+      board[:f4] = Piece.new(:rook, :black)
+
+      enemy_moves = game.get_all_possible_paths(:black)
+      king_moves = game.get_possible_moves(board[:e5], :e5)
+      king_moves = game.trim_king_moves(king_moves, enemy_moves)
+      expect(king_moves).to eql([])
+    end
+  end
+
 
 end

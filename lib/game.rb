@@ -102,7 +102,13 @@ class Game
           else
             moves = get_possible_moves(cell, cell_location)
           end
-          cell.type == :knight ? paths << moves : moves.each { |move | paths << get_move_path(cell_location, move) unless move_obstructed?(cell_location, move) }
+          if cell.type == :knight 
+            paths << moves 
+          else
+            moves.each do |move| 
+              paths << get_move_path(cell_location, move) unless move_obstructed?(cell_location, move, true)
+            end
+          end
         end
       end
     end
@@ -114,9 +120,27 @@ class Game
     king_moves.select { |king_move| !enemy_moves.include?(king_move) }
   end
 
-  private
+  def checkmate?
+    king = get_king_location(current_player.color)
+    enemy_color = get_enemy_color
+    king_moves = get_possible_moves(board[king], king)
+    enemy_paths = get_all_possible_paths(enemy_color)
+    king_moves = trim_king_moves(king_moves, enemy_paths)
+
+    king_in_check?(king, enemy_paths) && king_moves.size == 0 ? true : false
+  end
+
+  # private
+  def get_enemy_color
+    current_player.color == :white ? :black : :white
+  end
+  
   def contains_piece?(cell)
     board[cell].class <= Piece ? true : false
+  end
+
+  def contains_colored_piece?(cell, color)
+    board[cell].class <= Piece && board[cell].color == current_player.color ? true : false
   end
 
   def contains_enemy_piece?(cell)
@@ -155,9 +179,13 @@ class Game
     end
   end
 
-  def move_obstructed?(start_cell, end_cell)
-    # disregard the destination cell when the intent is to capture an enemy piece
-    contains_enemy_piece?(end_cell) ? path = get_move_path(start_cell, end_cell)[0...-1] : path = get_move_path(start_cell, end_cell)
+  def move_obstructed?(start_cell, end_cell, check=false)
+    if check
+      contains_piece?(end_cell) ? path = get_move_path(start_cell, end_cell)[0...-1] : path = get_move_path(start_cell, end_cell)
+    else
+      # disregard the destination cell when the intent is to capture an enemy piece
+      contains_enemy_piece?(end_cell) ? path = get_move_path(start_cell, end_cell)[0...-1] : path = get_move_path(start_cell, end_cell)
+    end
     path.each { |cell| return true unless board.empty?(cell) }
     false
   end

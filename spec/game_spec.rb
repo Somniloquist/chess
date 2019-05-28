@@ -433,7 +433,7 @@ describe Game do
       expect(king_moves).to eql([:e4, :d4, :d5])
     end
 
-    it "returns an empty array with there are no safe moves" do
+    it "returns an empty array when there are no safe moves" do
       board = Board.new
       board.clear
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
@@ -452,5 +452,35 @@ describe Game do
     end
   end
 
+  describe "#checkmate" do
+   it "returns true when king is in check and has no legal moves available" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+
+      board[:e1] = ""
+      board[:e5] = Piece.new(:king, :white)
+      board[:d6] = Piece.new(:rook, :black)
+      board[:f4] = Piece.new(:rook, :black)
+      board[:d4] = Piece.new(:queen, :black)
+
+      expect(game.checkmate?).to eql(true)
+   end
+
+   it "returns false when king is in check but still has legal moves" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+
+      board[:e1] = ""
+      board[:e5] = Piece.new(:king, :white)
+      board[:d6] = Piece.new(:rook, :black)
+      board[:f4] = Piece.new(:rook, :black)
+
+      expect(game.checkmate?).to eql(false)
+   end
+  end
 
 end

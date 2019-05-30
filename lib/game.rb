@@ -74,7 +74,7 @@ class Game
 
   def king_in_check?(location_of_king, paths)
     return false if paths.nil?
-    paths.include?(location_of_king) ? true : false
+    paths.flatten.include?(location_of_king) ? true : false
   end
 
   # get chess notation location of the king (of provided color)
@@ -105,32 +105,51 @@ class Game
           if cell.type == :knight 
             paths << moves 
           else
+            path = []
             moves.each do |move| 
-              paths << get_move_path(cell_location, move) unless move_obstructed?(cell_location, move, true)
+              path << get_move_path(cell_location, move) unless move_obstructed?(cell_location, move, true)
             end
+            path.unshift(cell_location)
+            paths << path.flatten.uniq
           end
         end
       end
     end
 
-    paths.flatten.uniq
+    paths
   end
 
   def trim_king_moves(king_moves, enemy_moves)
-    king_moves.select { |king_move| !enemy_moves.include?(king_move) }
+    king_moves.select { |king_move| !enemy_moves.flatten.include?(king_move) }
   end
 
   def checkmate?
-    king = get_king_location(current_player.color)
+    king_location = get_king_location(current_player.color)
+    king = board[king_location]
     enemy_color = get_enemy_color
-    king_moves = get_possible_moves(board[king], king)
+    king_moves = get_possible_moves(king, king_location)
     enemy_paths = get_all_possible_paths(enemy_color)
     king_moves = trim_king_moves(king_moves, enemy_paths)
 
-    king_in_check?(king, enemy_paths) && king_moves.size == 0 ? true : false
+    # check if a friendly piece can "block" the attack
+    friendly_paths = get_all_possible_paths(current_player.color)
+    # remove friendly kings paths (first element of each path is the origin of that path)
+    friendly_paths.select! { |path| path[0] != king_location}
+    check_path = enemy_paths.select { |path| path.include?(king_location)}
+    check_path.map! { |path| path[0..path.index(king_location)] }
+
+    king_in_check?(king_location, enemy_paths) && king_moves.size == 0 && !king_can_be_defended?(king_location, check_path, friendly_paths)  ? true : false
   end
 
   private
+  def king_can_be_defended?(king_location, check_path, friendly_paths)
+    check_path, friendly_paths = check_path.flatten, friendly_paths.flatten
+    return false if check_path.count(king_location) > 1
+    return false if friendly_paths.size <= 0
+    friendly_paths.each { |cell| return true if check_path.include?(cell) }
+    false
+  end
+
   def get_enemy_color
     current_player.color == :white ? :black : :white
   end

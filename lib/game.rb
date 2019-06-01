@@ -60,7 +60,7 @@ class Game
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
 
-  # Workaround used to find checkmate (get_all_possible_moves requires a destination cell
+  # Workaround used to find checkmate (get_all_possible_paths requires a destination cell
   # to determine if the pawn is capturing)
   def get_possible_pawn_capture_moves(piece, position)
     position = board.chess_notation_to_coordinates(position)
@@ -72,9 +72,11 @@ class Game
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
 
-  def king_in_check?(location_of_king, paths)
-    return false if paths.nil?
-    paths.flatten.include?(location_of_king) ? true : false
+  def player_in_check?
+    location_of_king = get_king_location(current_player.color)
+    enemy_paths = get_all_possible_paths(get_enemy_color)
+    return false if enemy_paths.nil?
+    enemy_paths.flatten.include?(location_of_king) ? true : false
   end
 
   # get chess notation location of the king (of provided color)
@@ -138,7 +140,7 @@ class Game
     check_path = enemy_paths.select { |path| path.include?(king_location)}
     check_path.map! { |path| path[0..path.index(king_location)] }
 
-    king_in_check?(king_location, enemy_paths) && king_moves.size == 0 && !king_can_be_defended?(king_location, check_path, friendly_paths)  ? true : false
+    player_in_check? && king_moves.size == 0 && !king_can_be_defended?(king_location, check_path, friendly_paths)  ? true : false
   end
 
   private

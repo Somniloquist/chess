@@ -371,7 +371,7 @@ describe Game do
     end
   end
 
-  describe "#king_in_check?" do
+  describe "#player_in_check?" do
     it "returns true when king is in another piece's path" do
         board = Board.new
         board.clear
@@ -384,7 +384,7 @@ describe Game do
         king_location = game.get_king_location(:white)
         enemy_paths = game.get_all_possible_paths(:black)
 
-        expect(game.king_in_check?(king_location, enemy_paths)).to eql(true)
+        expect(game.player_in_check?).to eql(true)
     end
     
     it "returns false when enemy's capture path is blocked" do
@@ -398,7 +398,7 @@ describe Game do
         king_location = game.get_king_location(:white)
         enemy_paths = game.get_all_possible_paths(:black)
 
-        expect(game.king_in_check?(king_location, enemy_paths)).to eql(false)
+        expect(game.player_in_check?).to eql(false)
     end
   end
 

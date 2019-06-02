@@ -6,7 +6,7 @@ class Game
     @player1, @player2 = player1, player2
     @current_player = player1 # white player goes first
   end
-  
+
   def make_play(start_cell, end_cell)
     return false unless board[start_cell].class <= Piece
     return false unless board[start_cell] && board[end_cell] # cell exists
@@ -143,7 +143,18 @@ class Game
     player_in_check? && king_moves.size == 0 && !king_can_be_defended?(king_location, check_path, friendly_paths)  ? true : false
   end
 
-  private
+  def stalemate?
+    location_of_king = get_king_location(current_player.color)
+    enemy_paths = get_all_possible_paths(get_enemy_color)
+    king_moves = get_possible_moves(board[location_of_king], location_of_king)
+
+    legal_moves = trim_king_moves(king_moves, enemy_paths)
+
+    return true if !player_in_check? && legal_moves.size == 0
+    false
+  end
+
+  # private
   def king_can_be_defended?(king_location, check_path, friendly_paths)
     check_path, friendly_paths = check_path.flatten, friendly_paths.flatten
     return false if check_path.count(king_location) > 1

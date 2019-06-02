@@ -519,7 +519,6 @@ describe Game do
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2) 
 
-      board[:e1] = ""
       board[:e1] = Piece.new(:king, :white)
       board[:f3] = Piece.new(:bishop, :white)
       board[:a1] = Piece.new(:rook, :black)
@@ -528,7 +527,48 @@ describe Game do
 
       expect(game.checkmate?).to eql(true)
     end
+  end
 
+  describe "#stalemate?" do
+    it "returns true when player(white) is not in check but has no legal moves left" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+      board[:h8] = Piece.new(:king, :white)
+      board[:f7] = Piece.new(:queen, :black)
+      board[:g6] = Piece.new(:king, :black)
+
+      expect(game.stalemate?).to eql(true)
+    end
+
+    it "returns true when player(black) is not in check but has no legal moves left" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+
+      game.current_player = p2
+      board[:f8] = Piece.new(:king, :black)
+      board[:f7] = Pawn.new(:white)
+      board[:f6] = Piece.new(:king, :white)
+
+      expect(game.stalemate?).to eql(true)
+    end
+
+    it "returns false when player(white) is not in check and has legal moves left" do
+      board = Board.new
+      board.clear
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2) 
+
+      board[:h8] = Piece.new(:king, :white)
+      board[:f4] = Piece.new(:bishop, :white)
+      board[:f7] = Piece.new(:queen, :black)
+      board[:g6] = Piece.new(:king, :black)
+
+      expect(game.stalemate?).to eql(false)
+    end
   end
 
 end

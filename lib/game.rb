@@ -7,11 +7,23 @@ class Game
     @current_player = player1 # white player goes first
   end
 
-  def has_legal_move?(cell)
+  def piece_has_legal_move?(cell)
     piece = board[cell]
     moves = get_possible_moves(piece, cell)
     moves.each { |move| return true unless move_obstructed?(cell, move)}
     false
+  end
+
+  def player_has_legal_move?(color = current_player.color)
+    
+  end
+
+  def get_location_of_all_pieces(color = current_player.color)
+    pieces = []
+    board.grid.each_with_index do |row, y|
+      row.each_with_index { |cell, x| pieces << board.coordinates_to_chess_notation([y,x]) if cell.class <= Piece && cell.color == color }
+    end
+    pieces
   end
 
   def valid_play?(start_cell, end_cell)

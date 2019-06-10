@@ -15,10 +15,14 @@ class Game
   end
 
   def player_has_legal_move?(color = current_player.color)
-    
+    piece_locations = get_location_of_all_pieces(color)
+    # ignore the king, function does not check for king's moves
+    piece_locations.delete(get_king_location(color))
+    piece_locations.each { |cell| return true if piece_has_legal_move?(cell) }
+    false
   end
 
-  def get_location_of_all_pieces(color = current_player.color)
+  def get_location_of_all_pieces(color)
     pieces = []
     board.grid.each_with_index do |row, y|
       row.each_with_index { |cell, x| pieces << board.coordinates_to_chess_notation([y,x]) if cell.class <= Piece && cell.color == color }
@@ -172,9 +176,9 @@ class Game
     enemy_paths = get_all_possible_paths(get_enemy_color)
     king_moves = get_possible_moves(board[location_of_king], location_of_king)
 
-    legal_moves = trim_king_moves(king_moves, enemy_paths)
+    king_legal_moves = trim_king_moves(king_moves, enemy_paths)
 
-    return true if !player_in_check? && legal_moves.size == 0
+    return true if !player_in_check? && king_legal_moves.size == 0 && !player_has_legal_move?
     false
   end
 

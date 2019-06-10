@@ -7,10 +7,22 @@ class Game
     @current_player = player1 # white player goes first
   end
 
-  def make_play(start_cell, end_cell)
+  def has_legal_move?(cell)
+    piece = board[cell]
+    moves = get_possible_moves(piece, cell)
+    moves.each { |move| return true unless move_obstructed?(cell, move)}
+    false
+  end
+
+  def valid_play?(start_cell, end_cell)
     return false unless board[start_cell].class <= Piece
     return false unless board[start_cell] && board[end_cell] # cell exists
     return false unless board[start_cell].color == current_player.color
+    true
+  end
+
+  def make_play(start_cell, end_cell)
+    return false unless valid_play?(start_cell, end_cell)
     possible_moves = get_possible_moves(board[start_cell], start_cell, end_cell)
     return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
 

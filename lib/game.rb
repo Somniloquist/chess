@@ -7,36 +7,6 @@ class Game
     @current_player = player1 # white player goes first
   end
 
-  def piece_has_legal_move?(cell)
-    piece = board[cell]
-    moves = get_possible_moves(piece, cell)
-    moves.each { |move| return true unless move_obstructed?(cell, move)}
-    false
-  end
-
-  def player_has_legal_move?(color = current_player.color)
-    piece_locations = get_location_of_all_pieces(color)
-    # ignore the king, function does not check for king's moves
-    piece_locations.delete(get_king_location(color))
-    piece_locations.each { |cell| return true if piece_has_legal_move?(cell) }
-    false
-  end
-
-  def get_location_of_all_pieces(color)
-    pieces = []
-    board.grid.each_with_index do |row, y|
-      row.each_with_index { |cell, x| pieces << board.coordinates_to_chess_notation([y,x]) if cell.class <= Piece && cell.color == color }
-    end
-    pieces
-  end
-
-  def valid_play?(start_cell, end_cell)
-    return false unless board[start_cell].class <= Piece
-    return false unless board[start_cell] && board[end_cell] # cell exists
-    return false unless board[start_cell].color == current_player.color
-    true
-  end
-
   def make_play(start_cell, end_cell)
     return false unless valid_play?(start_cell, end_cell)
     possible_moves = get_possible_moves(board[start_cell], start_cell, end_cell)
@@ -182,7 +152,12 @@ class Game
     false
   end
 
-  # private
+
+
+
+
+
+  private
   def king_can_be_defended?(king_location, check_path, friendly_paths)
     check_path, friendly_paths = check_path.flatten, friendly_paths.flatten
     return false if check_path.count(king_location) > 1
@@ -297,6 +272,36 @@ class Game
   def promote_pawn(cell, promotion)
     pawn = board[cell]
     board[cell] = Piece.new(promotion, pawn.color)
+  end
+
+  def piece_has_legal_move?(cell)
+    piece = board[cell]
+    moves = get_possible_moves(piece, cell)
+    moves.each { |move| return true unless move_obstructed?(cell, move)}
+    false
+  end
+
+  def player_has_legal_move?(color = current_player.color)
+    piece_locations = get_location_of_all_pieces(color)
+    # ignore the king, function does not check for king's moves
+    piece_locations.delete(get_king_location(color))
+    piece_locations.each { |cell| return true if piece_has_legal_move?(cell) }
+    false
+  end
+
+  def get_location_of_all_pieces(color)
+    pieces = []
+    board.grid.each_with_index do |row, y|
+      row.each_with_index { |cell, x| pieces << board.coordinates_to_chess_notation([y,x]) if cell.class <= Piece && cell.color == color }
+    end
+    pieces
+  end
+
+  def valid_play?(start_cell, end_cell)
+    return false unless board[start_cell].class <= Piece
+    return false unless board[start_cell] && board[end_cell] # cell exists
+    return false unless board[start_cell].color == current_player.color
+    true
   end
 
   

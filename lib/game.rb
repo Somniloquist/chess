@@ -7,6 +7,29 @@ class Game
     @current_player = player1 # white player goes first
   end
 
+  def play
+    until game_over?
+      puts board
+      puts("TURN : #{current_player.color.to_s.upcase}")
+      loop do
+        piece_to_move = prompt_player_choice("Select a piece to move >> ")
+        target_cell = prompt_player_choice("Select a target location >> ")
+
+        if make_play(piece_to_move, target_cell)
+          if promotion_possible?(target_cell)
+            promotion_choice = get_promotion_choice
+            promote_pawn(target_cell, promotion_choice)
+          end
+          break
+        end
+      end
+
+      swap_current_player
+    end
+
+    puts board
+  end
+
   def make_play(start_cell, end_cell)
     return false unless valid_play?(start_cell, end_cell)
     possible_moves = get_possible_moves(board[start_cell], start_cell, end_cell)

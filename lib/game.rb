@@ -327,5 +327,18 @@ class Game
     true
   end
 
+  def prompt_player_choice(message)
+    print message
+    gets.chomp.to_sym
+  end
+
+  def game_over?
+    stalemate? || checkmate? ? true : false
+  end
+
+  def swap_current_player
+    current_player == player1 ? @current_player = player2 : @current_player = player1
+  end
+
   
 end

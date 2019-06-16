@@ -20,7 +20,9 @@ class Game
             promotion_choice = get_promotion_choice
             promote_pawn(target_cell, promotion_choice)
           end
-          break
+
+          # revert move if the move puts/leaves the king in check
+          player_in_check? ? puts "load_state" : break
         end
       end
 
@@ -180,7 +182,7 @@ class Game
 
 
 
-  private
+  # private
   def king_can_be_defended?(king_location, check_path, friendly_paths)
     check_path, friendly_paths = check_path.flatten, friendly_paths.flatten
     return false if check_path.count(king_location) > 1

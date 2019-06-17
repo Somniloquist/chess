@@ -13,20 +13,32 @@ class Game
 
   def play
     until game_over?
-      puts board
-      puts("TURN : #{current_player.color.to_s.upcase}")
       loop do
-        piece_to_move = prompt_player_choice("Select a piece to move >> ")
+        save_state
+        puts board
+        puts("TURN : #{current_player.color.to_s.upcase}")
+        starting_cell = prompt_player_choice("Select a piece to move >> ")
         target_cell = prompt_player_choice("Select a target location >> ")
 
-        if make_play(piece_to_move, target_cell)
+        # store origainal values in case the move needs to be reverted
+        temp1 = board[starting_cell]
+        temp2 = board[target_cell]
+
+        if make_play(starting_cell, target_cell)
           if promotion_possible?(target_cell)
             promotion_choice = get_promotion_choice
             promote_pawn(target_cell, promotion_choice)
           end
 
           # revert move if the move puts/leaves the king in check
-          player_in_check? ? puts "load_state" : break
+          if player_in_check?
+            board[starting_cell] = temp1
+            board[target_cell] = temp2
+            puts("Illegal move, please try again.")
+          else
+            break
+          end
+
         end
       end
 
@@ -190,12 +202,11 @@ class Game
 
 
 
-  private
+  # private
   def save_state(file_name = "autosave")
     yaml = YAML::dump(self)
     FileUtils.mkdir(SAVE_FILE_DIR) unless File.directory?(SAVE_FILE_DIR)
     File.open("#{SAVE_FILE_DIR}/#{file_name}.yaml", "w") {|save_file| save_file.puts(yaml)}
-    puts("Game saved.")
   end
 
   def king_can_be_defended?(king_location, check_path, friendly_paths)

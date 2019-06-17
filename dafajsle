@@ -1,0 +1,30 @@
+[33mcommit 43b00602b511db5527c5784364428c0f387051da[m[33m ([m[1;36mHEAD -> [m[1;32mplay_game[m[33m)[m
+Merge: d92b9ce 6004a3e
+Author: Robin Unger <robin.e.unger@gmail.com>
+Date:   Sun Jun 16 19:24:58 2019 -0500
+
+    Resolve merge conflict, add serialization
+
+[33mcommit 6004a3e704ecd8d333feafceae309046fddaf39e[m[33m ([m[1;32mserialization[m[33m)[m
+Author: Robin Unger <robin.e.unger@gmail.com>
+Date:   Sun Jun 16 18:44:00 2019 -0500
+
+    Add serialization functions
+
+[33mcommit d92b9cee4f0463a4a682daafc4ab635a6c326c28[m
+Author: Robin Unger <robin.e.unger@gmail.com>
+Date:   Sun Jun 16 18:00:53 2019 -0500
+
+    Add partial game_play loop
+
+[33mcommit 6a94071baa45c5e69b5aada6a1832a33d56dd9aa[m
+Author: Robin Unger <robin.e.unger@gmail.com>
+Date:   Tue Jun 11 20:56:51 2019 -0500
+
+    Add helper functions for game play function
+
+[33mcommit 0e66a6cf82bbe2d2d308367099b29b9910bd2566[m
+Author: Robin Unger <robin.e.unger@gmail.com>
+Date:   Tue Jun 11 20:56:10 2019 -0500
+
+    Add main game play loop function

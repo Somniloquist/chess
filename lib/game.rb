@@ -1,3 +1,7 @@
+require "yaml"
+require "fileutils"
+SAVE_FILE_DIR = "./save/"
+
 class Game
   attr_accessor :current_player
   attr_reader :board, :player1, :player2
@@ -47,6 +51,10 @@ class Game
     end
 
     end_cell
+  end
+
+  def self.load_state(file_name = "autosave")
+    File.open("#{SAVE_FILE_DIR}/#{file_name}.yaml", "r") { |data| YAML::load(data) }
   end
 
   # returns direct path(all cells) between start(exclusive) and end_cell(inclusive)
@@ -182,7 +190,14 @@ class Game
 
 
 
-  # private
+  private
+  def save_state(file_name = "autosave")
+    yaml = YAML::dump(self)
+    FileUtils.mkdir(SAVE_FILE_DIR) unless File.directory?(SAVE_FILE_DIR)
+    File.open("#{SAVE_FILE_DIR}/#{file_name}.yaml", "w") {|save_file| save_file.puts(yaml)}
+    puts("Game saved.")
+  end
+
   def king_can_be_defended?(king_location, check_path, friendly_paths)
     check_path, friendly_paths = check_path.flatten, friendly_paths.flatten
     return false if check_path.count(king_location) > 1

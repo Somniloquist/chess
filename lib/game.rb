@@ -14,20 +14,16 @@ class Game
   def play
     puts("Type \"save\" at any point to save and quit.")
     puts("Type \"exit\" at any point to quit without saving.")
+    puts board
     until game_over?
       loop do
-        puts board
         puts("TURN : #{current_player.color.to_s.upcase}")
         starting_cell = prompt_player_choice("Select a piece to move >> ")
-        save_state if starting_cell == :save
-        quit_game if starting_cell == :exit
         target_cell = prompt_player_choice("Select a target location >> ")
-        save_state if target_cell == :save
-        quit_game if target_cell == :exit
 
         # store origainal values in case the move needs to be reverted
-        temp1 = board[starting_cell]
-        temp2 = board[target_cell]
+        starting_cell_temp_value = board[starting_cell]
+        target_cell_temp_value = board[target_cell]
 
         if make_play(starting_cell, target_cell)
           if promotion_possible?(target_cell)
@@ -37,8 +33,8 @@ class Game
 
           # revert move if the move puts/leaves the king in check
           if player_in_check?
-            board[starting_cell] = temp1
-            board[target_cell] = temp2
+            board[starting_cell] = starting_cell_temp_value
+            board[target_cell] = target_cell_temp_value
             puts("Illegal move, please try again.")
           else
             break
@@ -47,6 +43,7 @@ class Game
         end
       end
 
+      puts board
       swap_current_player
     end
 
@@ -382,7 +379,10 @@ class Game
 
   def prompt_player_choice(message)
     print message
-    gets.chomp.downcase.to_sym
+    choice = gets.chomp.downcase.to_sym
+    save_state if choice == :save
+    quit_game if choice  == :exit
+    choice
   end
 
   def game_over?

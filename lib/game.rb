@@ -12,13 +12,18 @@ class Game
   end
 
   def play
+    puts("Type \"save\" at any point to save and quit.")
+    puts("Type \"exit\" at any point to quit without saving.")
     until game_over?
       loop do
-        save_state
         puts board
         puts("TURN : #{current_player.color.to_s.upcase}")
         starting_cell = prompt_player_choice("Select a piece to move >> ")
+        save_state if starting_cell == :save
+        quit_game if starting_cell == :exit
         target_cell = prompt_player_choice("Select a target location >> ")
+        save_state if target_cell == :save
+        quit_game if target_cell == :exit
 
         # store origainal values in case the move needs to be reverted
         temp1 = board[starting_cell]
@@ -65,8 +70,12 @@ class Game
     end_cell
   end
 
-  def self.load_state(file_name = "autosave")
+  def self.load_state(file_name = "suspend")
     File.open("#{SAVE_FILE_DIR}/#{file_name}.yaml", "r") { |data| YAML::load(data) }
+  end
+
+  def self.load_test_state(file_name)
+    File.open("./test_saves/#{file_name}.yaml", "r") { |data| YAML::load(data) }
   end
 
   # returns direct path(all cells) between start(exclusive) and end_cell(inclusive)
@@ -84,6 +93,7 @@ class Game
     else
       path = build_diagonal_path(start_y, start_x, end_y, end_x)
     end
+
     path.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
 
@@ -180,10 +190,18 @@ class Game
     friendly_paths = get_all_possible_paths(current_player.color)
     # remove friendly kings paths (first element of each path is the origin of that path)
     friendly_paths.select! { |path| path[0] != king_location}
-    check_path = enemy_paths.select { |path| path.include?(king_location)}
-    check_path.map! { |path| path[0..path.index(king_location)] }
+    check_paths = enemy_paths.select { |path| path.include?(king_location)}
 
-    player_in_check? && king_moves.size == 0 && !king_can_be_defended?(king_location, check_path, friendly_paths)  ? true : false
+    # remove unnessary cells
+    # rebuild the paths to only include paths that lead to the king's position
+    check_paths.map! do |path|
+      enemy_piece_starting_coordinate = path.first
+      temp = get_move_path(enemy_piece_starting_coordinate, king_location).unshift(enemy_piece_starting_coordinate)
+      # temp.pop if contains_friendly_piece?(temp.last)
+      # temp
+    end
+
+    player_in_check? && king_moves.size == 0 && !king_can_be_defended?(king_location, check_paths, friendly_paths)  ? true : false
   end
 
   def stalemate?
@@ -203,14 +221,21 @@ class Game
 
 
   # private
-  def save_state(file_name = "autosave")
+  def quit_game
+    exit
+  end
+
+  def save_state(file_name = "suspend")
     yaml = YAML::dump(self)
     FileUtils.mkdir(SAVE_FILE_DIR) unless File.directory?(SAVE_FILE_DIR)
     File.open("#{SAVE_FILE_DIR}/#{file_name}.yaml", "w") {|save_file| save_file.puts(yaml)}
+    puts("Game saved.")
   end
 
   def king_can_be_defended?(king_location, check_path, friendly_paths)
     check_path, friendly_paths = check_path.flatten, friendly_paths.flatten
+    # remove king's location to prevent false positives
+    friendly_paths.select! {|cell| cell != king_location}
     return false if check_path.count(king_location) > 1
     return false if friendly_paths.size <= 0
     friendly_paths.each { |cell| return true if check_path.include?(cell) }
@@ -225,7 +250,7 @@ class Game
     board[cell].class <= Piece ? true : false
   end
 
-  def contains_colored_piece?(cell, color)
+  def contains_friendly_piece?(cell)
     board[cell].class <= Piece && board[cell].color == current_player.color ? true : false
   end
 
@@ -357,11 +382,19 @@ class Game
 
   def prompt_player_choice(message)
     print message
-    gets.chomp.to_sym
+    gets.chomp.downcase.to_sym
   end
 
   def game_over?
-    stalemate? || checkmate? ? true : false
+    if stalemate?
+      puts("GAME OVER : STALEMATE")
+      true
+    elsif checkmate?
+      puts("GAME OVER : CHECKMATE #{get_enemy_color.upcase} WINS")
+      true
+    else
+      false
+    end
   end
 
   def swap_current_player

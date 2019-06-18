@@ -518,7 +518,6 @@ describe Game do
       board.clear
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
       game = Game.new(board, p1, p2) 
-
       board[:e1] = Piece.new(:king, :white)
       board[:f3] = Piece.new(:bishop, :white)
       board[:a1] = Piece.new(:rook, :black)
@@ -594,6 +593,11 @@ describe Game do
       board[:g6] = Piece.new(:king, :black)
       board[:h5] = Pawn.new(:white)
       expect(game.stalemate?).to eql(false)
+    end
+
+    it "returns true when white is unable to defend the king due to attack from multiple sources" do
+      game = Game.load_test_state("checkmate")
+      expect(game.checkmate?).to eql(true)
     end
   end
 

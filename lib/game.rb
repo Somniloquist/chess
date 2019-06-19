@@ -15,6 +15,7 @@ class Game
     puts("Type \"save\" at any point to save and quit.")
     puts("Type \"exit\" at any point to quit without saving.")
     puts board
+
     until game_over?
       loop do
         puts("TURN : #{current_player.color.to_s.upcase}")

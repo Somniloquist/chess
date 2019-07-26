@@ -59,6 +59,17 @@ describe Game do
   end
 
   describe "#make_play" do
+    it "sets piece's action taken attribute to true" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      pawn = game.board[:a2]
+      expect(pawn.action_taken).to eql(false)
+      game.make_play(:a2, :a4)
+      expect(pawn.action_taken).to eql(true)
+    end
+
     it "returns false if a chess piece is not chosen" do
       board = Board.new
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
@@ -600,5 +611,7 @@ describe Game do
       expect(game.checkmate?).to eql(true)
     end
   end
+
+  
 
 end

@@ -21,7 +21,6 @@ class Game
         puts("TURN : #{current_player.color.to_s.upcase}")
         starting_cell = prompt_player_choice("Select a piece to move >> ")
         target_cell = prompt_player_choice("Select a target location >> ")
-
         # store origainal values in case the move needs to be reverted
         starting_cell_temp_value = board[starting_cell]
         target_cell_temp_value = board[target_cell]
@@ -52,18 +51,21 @@ class Game
   end
 
   def make_play(start_cell, end_cell)
+    piece_being_moved = board[start_cell]
     return false unless valid_play?(start_cell, end_cell)
-    possible_moves = get_possible_moves(board[start_cell], start_cell, end_cell)
+    possible_moves = get_possible_moves(piece_being_moved, start_cell, end_cell)
     return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
 
     # Knight can 'jump' over other pieces
-    return false if move_obstructed?(start_cell, end_cell) unless board[start_cell].type == :knight
+    return false if move_obstructed?(start_cell, end_cell) unless piece_being_moved.type == :knight
 
     if contains_enemy_piece?(end_cell)
       capture_piece(start_cell, end_cell)
     else
       move_piece(start_cell, end_cell)
     end
+
+    piece_being_moved.set_action_taken
 
     end_cell
   end

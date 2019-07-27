@@ -50,23 +50,72 @@ class Game
     puts board
   end
 
+  def play_is_castle?(start_cell, end_cell)
+    king_start_positions = [:e1, :e8]
+    possible_castle_moves = [:c1, :g1, :c8, :g8]
+    return false unless board[start_cell].type == :king
+    return false unless king_start_positions.include?(start_cell)
+    return false unless possible_castle_moves.include?(end_cell)
+
+    true
+  end
+  
+  def get_rook_position_for_castle(end_cell)
+   return :a1 if end_cell == :c1
+   return :h1 if end_cell == :g1
+   return :a8 if end_cell == :c8
+   return :h8 if end_cell == :g8
+  end
+
+  def move_rook_for_castle(rook_position)
+    case rook_position
+    when :a1
+      board[rook_position], board[:d1] = board[:d1], board[rook_position]
+    when :h1
+      board[rook_position], board[:f1] = board[:f1], board[rook_position]
+    when :a8
+      board[rook_position], board[:d8] = board[:d8], board[rook_position]
+    when :h8
+      board[rook_position], board[:f8] = board[:f8], board[rook_position]
+    else
+      puts "Woops, that's not supposed to happen. Illegal move."
+    end
+  end
+
+  def castle_is_valid?(start_cell, end_cell)
+    king = board[start_cell]
+    rook_position = get_rook_position_for_castle(end_cell)
+    rook = board[rook_position]
+
+    return false unless rook.type == :rook
+    return false if king.action_taken
+    return false if rook.action_taken
+
+    true
+  end
+
   def make_play(start_cell, end_cell)
     piece_being_moved = board[start_cell]
     return false unless valid_play?(start_cell, end_cell)
     possible_moves = get_possible_moves(piece_being_moved, start_cell, end_cell)
-    return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
 
-    # Knight can 'jump' over other pieces
-    return false if move_obstructed?(start_cell, end_cell) unless piece_being_moved.type == :knight
-
-    if contains_enemy_piece?(end_cell)
-      capture_piece(start_cell, end_cell)
+    if play_is_castle?(start_cell, end_cell)
+      return false unless castle_is_valid?(start_cell, end_cell)
+      board[start_cell], board[end_cell] = board[end_cell], board[start_cell]
+      move_rook_for_castle(get_rook_position_for_castle(end_cell))
     else
-      move_piece(start_cell, end_cell)
+      return false unless possible_moves.size > 0 && possible_moves.include?(end_cell)
+      # Knight can 'jump' over other pieces
+      return false if move_obstructed?(start_cell, end_cell) unless piece_being_moved.type == :knight
+
+      if contains_enemy_piece?(end_cell)
+        capture_piece(start_cell, end_cell)
+      else
+        move_piece(start_cell, end_cell)
+      end
     end
 
     piece_being_moved.set_action_taken
-
     end_cell
   end
 
@@ -330,6 +379,7 @@ class Game
   end
 
   def promotion_possible?(cell)
+    return false unless board[cell].class == Symbol
     board[cell].type == :pawn && (cell[1] == "1" || cell[1] == "8")
   end
 

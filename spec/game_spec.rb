@@ -365,9 +365,17 @@ describe Game do
       expect(game.board[:c1]).to eql('')
     end
 
-    it "returns false when king would pass through check", :focus do
+    it "returns false when king would pass through check" do
       game = Game.load_test_state('castle')
       game.board[:d8] = Piece.new(:rook, :black)
+      expect(game.make_play(:e1, :c1)).to eql(false)
+      expect(game.board[:d1]).to eql('')
+      expect(game.board[:c1]).to eql('')
+    end
+
+    it "returns false when king is in check" do
+      game = Game.load_test_state('castle')
+      game.board[:e8] = Piece.new(:rook, :black)
       expect(game.make_play(:e1, :c1)).to eql(false)
       expect(game.board[:d1]).to eql('')
       expect(game.board[:c1]).to eql('')

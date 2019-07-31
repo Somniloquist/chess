@@ -50,62 +50,6 @@ class Game
     puts board
   end
 
-  def play_is_castle?(start_cell, end_cell)
-    king_start_positions = [:e1, :e8]
-    possible_castle_moves = [:c1, :g1, :c8, :g8]
-    return false unless board[start_cell].type == :king
-    return false unless king_start_positions.include?(start_cell)
-    return false unless possible_castle_moves.include?(end_cell)
-
-    true
-  end
-  
-  def get_rook_position_for_castle(end_cell)
-   return :a1 if end_cell == :c1
-   return :h1 if end_cell == :g1
-   return :a8 if end_cell == :c8
-   return :h8 if end_cell == :g8
-  end
-
-  def move_rook_for_castle(rook_position)
-    case rook_position
-    when :a1
-      board[rook_position], board[:d1] = board[:d1], board[rook_position]
-    when :h1
-      board[rook_position], board[:f1] = board[:f1], board[rook_position]
-    when :a8
-      board[rook_position], board[:d8] = board[:d8], board[rook_position]
-    when :h8
-      board[rook_position], board[:f8] = board[:f8], board[rook_position]
-    else
-      puts "Woops, that's not supposed to happen. Illegal move."
-    end
-  end
-
-  def path_under_attack?(friendly_path, enemy_path)
-    friendly_path.each { |cell| return true if enemy_path.include?(cell) }
-    false
-  end
-
-  def castle_is_valid?(start_cell, end_cell)
-    king = board[start_cell]
-    rook_position = get_rook_position_for_castle(end_cell)
-    rook = board[rook_position]
-
-    enemy_paths = get_all_possible_paths(get_enemy_color).flatten.uniq
-    king_path = get_move_path(start_cell, end_cell)
-    p enemy_paths
-    p king_path
-
-    # return false if king is in check
-    return false unless rook.type == :rook
-    return false if path_under_attack?(king_path, enemy_paths)
-    return false if king.action_taken || rook.action_taken
-    return false if move_obstructed?(start_cell, end_cell) || move_obstructed?(rook_position, end_cell)
-
-    true
-  end
-
   def make_play(start_cell, end_cell)
     piece_being_moved = board[start_cell]
     return false unless valid_play?(start_cell, end_cell)
@@ -168,18 +112,6 @@ class Game
       possible_moves = piece.moves[0..-1] #duplicate piece move list
       add_extra_pawn_move!(possible_moves, piece.color, position) if piece.type == :pawn
     end
-    possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
-    possible_moves.select! { |coordinates| valid_move?(coordinates) }
-
-    possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
-  end
-
-  # Workaround used to find checkmate (get_all_possible_paths requires a destination cell
-  # to determine if the pawn is capturing)
-  def get_possible_pawn_capture_moves(piece, position)
-    position = board.chess_notation_to_coordinates(position)
-
-    possible_moves = piece.capture_moves[0..-1] #duplicate piece move list
     possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
     possible_moves.select! { |coordinates| valid_move?(coordinates) }
 
@@ -258,8 +190,6 @@ class Game
     check_paths.map! do |path|
       enemy_piece_starting_coordinate = path.first
       temp = get_move_path(enemy_piece_starting_coordinate, king_location).unshift(enemy_piece_starting_coordinate)
-      # temp.pop if contains_friendly_piece?(temp.last)
-      # temp
     end
 
     player_in_check? && king_moves.size == 0 && !king_can_be_defended?(king_location, check_paths, friendly_paths)  ? true : false
@@ -281,7 +211,7 @@ class Game
 
 
 
-  # private
+  private
   def quit_game
     exit
   end
@@ -464,6 +394,72 @@ class Game
 
   def swap_current_player
     current_player == player1 ? @current_player = player2 : @current_player = player1
+  end
+
+  def play_is_castle?(start_cell, end_cell)
+    king_start_positions = [:e1, :e8]
+    possible_castle_moves = [:c1, :g1, :c8, :g8]
+    return false unless board[start_cell].type == :king
+    return false unless king_start_positions.include?(start_cell)
+    return false unless possible_castle_moves.include?(end_cell)
+
+    true
+  end
+  
+  def get_rook_position_for_castle(end_cell)
+   return :a1 if end_cell == :c1
+   return :h1 if end_cell == :g1
+   return :a8 if end_cell == :c8
+   return :h8 if end_cell == :g8
+  end
+
+  def move_rook_for_castle(rook_position)
+    case rook_position
+    when :a1
+      board[rook_position], board[:d1] = board[:d1], board[rook_position]
+    when :h1
+      board[rook_position], board[:f1] = board[:f1], board[rook_position]
+    when :a8
+      board[rook_position], board[:d8] = board[:d8], board[rook_position]
+    when :h8
+      board[rook_position], board[:f8] = board[:f8], board[rook_position]
+    else
+      puts "Woops, that's not supposed to happen. Illegal move."
+    end
+  end
+
+  def path_under_attack?(friendly_path, enemy_path)
+    friendly_path.each { |cell| return true if enemy_path.include?(cell) }
+    false
+  end
+
+  def castle_is_valid?(start_cell, end_cell)
+    king = board[start_cell]
+    rook_position = get_rook_position_for_castle(end_cell)
+    rook = board[rook_position]
+
+    enemy_paths = get_all_possible_paths(get_enemy_color).flatten.uniq
+    king_path = get_move_path(start_cell, end_cell)
+
+    return false unless rook.type == :rook
+    return false if player_in_check?
+    return false if path_under_attack?(king_path, enemy_paths)
+    return false if king.action_taken || rook.action_taken
+    return false if move_obstructed?(start_cell, end_cell) || move_obstructed?(rook_position, end_cell)
+
+    true
+  end
+
+  # Workaround used to find checkmate (get_all_possible_paths requires a destination cell
+  # to determine if the pawn is capturing)
+  def get_possible_pawn_capture_moves(piece, position)
+    position = board.chess_notation_to_coordinates(position)
+
+    possible_moves = piece.capture_moves[0..-1] #duplicate piece move list
+    possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
+    possible_moves.select! { |coordinates| valid_move?(coordinates) }
+
+    possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
   end
 
   

@@ -329,6 +329,34 @@ describe Game do
       expect(board[:a8]).to eql(rook_black)
     end
 
+    it "allows castling" do
+      #test white short side
+      game = Game.load_test_state('castle')
+      game.make_play(:e1, :g1)
+      expect(game.board[:f1].type).to eql(:rook)
+      expect(game.board[:g1].type).to eql(:king)
+
+      #test white long side
+      game = Game.load_test_state('castle')
+      game.make_play(:e1, :c1)
+      expect(game.board[:d1].type).to eql(:rook)
+      expect(game.board[:c1].type).to eql(:king)
+
+      # test black short side
+      game = Game.load_test_state('castle')
+      game.current_player = game.player2
+      game.make_play(:e8, :g8)
+      expect(game.board[:f8].type).to eql(:rook)
+      expect(game.board[:g8].type).to eql(:king)
+
+      # test black long side
+      game = Game.load_test_state('castle')
+      game.current_player = game.player2
+      game.make_play(:e8, :c8)
+      expect(game.board[:d8].type).to eql(:rook)
+      expect(game.board[:c8].type).to eql(:king)
+    end
+
   end
 
   describe "#get_move_path" do

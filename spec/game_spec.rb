@@ -59,6 +59,17 @@ describe Game do
   end
 
   describe "#make_play" do
+    it "sets piece's action taken attribute to true" do
+      board = Board.new
+      p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
+      game = Game.new(board, p1, p2)
+
+      pawn = game.board[:a2]
+      expect(pawn.action_taken).to eql(false)
+      game.make_play(:a2, :a4)
+      expect(pawn.action_taken).to eql(true)
+    end
+
     it "returns false if a chess piece is not chosen" do
       board = Board.new
       p1, p2 = Player.new("p1", :white), Player.new("p2", :black)
@@ -316,6 +327,58 @@ describe Game do
       game.make_play(:a3, :a8)
       expect(board[:a3]).to eql(rook_white)
       expect(board[:a8]).to eql(rook_black)
+    end
+
+    it "allows castling" do
+      #test white short side
+      game = Game.load_test_state('castle')
+      game.make_play(:e1, :g1)
+      expect(game.board[:f1].type).to eql(:rook)
+      expect(game.board[:g1].type).to eql(:king)
+
+      #test white long side
+      game = Game.load_test_state('castle')
+      game.make_play(:e1, :c1)
+      expect(game.board[:d1].type).to eql(:rook)
+      expect(game.board[:c1].type).to eql(:king)
+
+      # test black short side
+      game = Game.load_test_state('castle')
+      game.current_player = game.player2
+      game.make_play(:e8, :g8)
+      expect(game.board[:f8].type).to eql(:rook)
+      expect(game.board[:g8].type).to eql(:king)
+
+      # test black long side
+      game = Game.load_test_state('castle')
+      game.current_player = game.player2
+      game.make_play(:e8, :c8)
+      expect(game.board[:d8].type).to eql(:rook)
+      expect(game.board[:c8].type).to eql(:king)
+    end
+
+    it "returns false when castle is blocked" do
+      game = Game.load_test_state('castle')
+      game.board[:b1] = Piece.new(:queen, :white)
+      expect(game.make_play(:e1, :c1)).to eql(false)
+      expect(game.board[:d1]).to eql('')
+      expect(game.board[:c1]).to eql('')
+    end
+
+    it "returns false when king would pass through check" do
+      game = Game.load_test_state('castle')
+      game.board[:d8] = Piece.new(:rook, :black)
+      expect(game.make_play(:e1, :c1)).to eql(false)
+      expect(game.board[:d1]).to eql('')
+      expect(game.board[:c1]).to eql('')
+    end
+
+    it "returns false when king is in check" do
+      game = Game.load_test_state('castle')
+      game.board[:e8] = Piece.new(:rook, :black)
+      expect(game.make_play(:e1, :c1)).to eql(false)
+      expect(game.board[:d1]).to eql('')
+      expect(game.board[:c1]).to eql('')
     end
 
   end
@@ -600,5 +663,7 @@ describe Game do
       expect(game.checkmate?).to eql(true)
     end
   end
+
+  
 
 end

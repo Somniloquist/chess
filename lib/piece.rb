@@ -3,11 +3,16 @@ require_relative "chess_helpers.rb"
 class Piece
   include ChessPieceSymbols
   include ChessPieceMoveList
-  attr_reader :type, :color
+  attr_reader :type, :color, :action_taken
 
   def initialize(type, color)
     @type = type
     @color = color
+    @action_taken = false
+  end
+
+  def set_action_taken
+    @action_taken = true
   end
 
   def moves
@@ -24,6 +29,11 @@ class Pawn < Piece
   def initialize(color)
     @type = :pawn
     @color = color
+    @action_taken = false
+  end
+
+  def set_action_taken
+    @action_taken = true
   end
 
   def moves

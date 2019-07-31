@@ -357,6 +357,22 @@ describe Game do
       expect(game.board[:c8].type).to eql(:king)
     end
 
+    it "returns false when castle is blocked" do
+      game = Game.load_test_state('castle')
+      game.board[:b1] = Piece.new(:queen, :white)
+      expect(game.make_play(:e1, :c1)).to eql(false)
+      expect(game.board[:d1]).to eql('')
+      expect(game.board[:c1]).to eql('')
+    end
+
+    it "returns false when king would pass through check", :focus do
+      game = Game.load_test_state('castle')
+      game.board[:d8] = Piece.new(:rook, :black)
+      expect(game.make_play(:e1, :c1)).to eql(false)
+      expect(game.board[:d1]).to eql('')
+      expect(game.board[:c1]).to eql('')
+    end
+
   end
 
   describe "#get_move_path" do

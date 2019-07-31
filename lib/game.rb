@@ -82,14 +82,26 @@ class Game
     end
   end
 
+  def path_under_attack?(friendly_path, enemy_path)
+    friendly_path.each { |cell| return true if enemy_path.include?(cell) }
+    false
+  end
+
   def castle_is_valid?(start_cell, end_cell)
     king = board[start_cell]
     rook_position = get_rook_position_for_castle(end_cell)
     rook = board[rook_position]
 
+    enemy_paths = get_all_possible_paths(get_enemy_color).flatten.uniq
+    king_path = get_move_path(start_cell, end_cell)
+    p enemy_paths
+    p king_path
+
+    # return false if king is in check
     return false unless rook.type == :rook
-    return false if king.action_taken
-    return false if rook.action_taken
+    return false if path_under_attack?(king_path, enemy_paths)
+    return false if king.action_taken || rook.action_taken
+    return false if move_obstructed?(start_cell, end_cell) || move_obstructed?(rook_position, end_cell)
 
     true
   end

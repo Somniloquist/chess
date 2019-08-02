@@ -64,7 +64,10 @@ class Game
       # Knight can 'jump' over other pieces
       return false if move_obstructed?(start_cell, end_cell) unless piece_being_moved.type == :knight
 
-      if contains_enemy_piece?(end_cell)
+      if piece_being_moved.is_a?(Pawn) && move_is_en_passant?(end_cell)
+        move_piece(start_cell, end_cell)
+        perform_en_passant
+      elsif contains_enemy_piece?(end_cell)
         capture_piece(start_cell, end_cell)
       else
         move_piece(start_cell, end_cell)
@@ -113,12 +116,13 @@ class Game
   def get_possible_moves(piece, position, end_cell = nil)
     position = board.chess_notation_to_coordinates(position)
 
-    if piece.type == :pawn && contains_enemy_piece?(end_cell)
+    if piece.type == :pawn && (contains_enemy_piece?(end_cell) || (move_is_en_passant?(end_cell) && !end_cell.nil?))
       possible_moves = piece.capture_moves[0..-1] #duplicate piece move list
     else
       possible_moves = piece.moves[0..-1] #duplicate piece move list
       add_extra_pawn_move!(possible_moves, piece.color, position) if piece.type == :pawn
     end
+      
     possible_moves.map! { |y,x| [y+position[0], x+position[1]] }
     possible_moves.select! { |coordinates| valid_move?(coordinates) }
 
@@ -481,5 +485,16 @@ class Game
     end
   end
 
+  def perform_en_passant()
+    board[board.en_passant[:pawn_cell]] = ''
+  end
   
+  def en_passant_possible?
+    !board.en_passant.empty?
+  end
+
+  def move_is_en_passant?(end_cell)
+    end_cell == board.en_passant[:capture_cell]
+  end
+
 end

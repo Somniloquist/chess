@@ -16,7 +16,7 @@ ruby chess.rb
 - **Starting the game**: Upon starting game you are given the option to start a new game or load a previous save.
 - **Moving pieces**: Type your desired move in chess notation when prompted (ex. c1). Actions are done in two steps, type only a single chess coordinate when prompted. If a move is invalid the player will be prompted again and the piece will no be moved.
 - **Castling**: To castle simply move the king two spaces towards a friendly rook
-- **En Passant**: 
+- **En Passant**: On a turn immediatly following a double move by an enemy pawn, you may capture the enemey pawn as if it only moved one cell.
 
 ## Improvments to Consider
 - **Menus**: Give users options to customize the game (manage save files, choosing player names etc.)

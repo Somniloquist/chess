@@ -2,10 +2,20 @@ require_relative "chess_helpers.rb"
 
 class Board
   include ChessNotation
-  attr_reader :grid
+  attr_reader :grid, :en_passant
   def initialize(columns=8, rows=8)
     @grid = Array.new(columns) {Array.new(rows, "")}
+    @en_passant = {}
     initialize_pieces
+  end
+
+  def set_en_passant(capture_cell, pawn_cell)
+    @en_passant[:capture_cell] = capture_cell
+    @en_passant[:pawn_cell] = pawn_cell
+  end
+
+  def clear_en_passant()
+    @en_passant = {}
   end
 
   def [](key)

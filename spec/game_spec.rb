@@ -381,6 +381,17 @@ describe Game do
       expect(game.board[:c1]).to eql('')
     end
 
+    it "allows en passant capture", :focus do
+      game = Game.load_test_state("en_passant")
+      game.make_play(:d7, :d5)
+
+      game.current_player = game.player1
+      game.make_play(:e5, :d6)
+
+      expect(game.board[:d5]).to eql('')
+      expect(game.board[:d6].type).to eql(:pawn)
+    end
+
   end
 
   describe "#get_move_path" do

@@ -72,6 +72,13 @@ class Game
     end
 
     piece_being_moved.set_action_taken
+    if piece_being_moved.is_a?(Pawn) && pawn_made_double_move?(start_cell, end_cell)
+      capture_cell = get_en_passant_capture_cell(start_cell, end_cell)
+      board.set_en_passant(capture_cell, end_cell)
+    else
+      board.clear_en_passant
+    end
+
     end_cell
   end
 
@@ -460,6 +467,18 @@ class Game
     possible_moves.select! { |coordinates| valid_move?(coordinates) }
 
     possible_moves.map { |coordinates| board.coordinates_to_chess_notation(coordinates) }
+  end
+
+  def pawn_made_double_move?(start_cell, end_cell)
+    (end_cell[1].to_i == start_cell[1].to_i + 2) || (end_cell[1].to_i == start_cell[1].to_i - 2)
+  end
+
+  def get_en_passant_capture_cell(start_cell, end_cell)
+    if start_cell[1] < end_cell[1]
+      capture_cell = "#{start_cell[0]}#{start_cell[1].to_i + 1}".to_sym
+    else
+      capture_cell = "#{start_cell[0]}#{start_cell[1].to_i - 1}".to_sym
+    end
   end
 
   

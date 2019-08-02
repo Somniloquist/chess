@@ -1,5 +1,5 @@
 # chess.rb
-A two player chess played via the command line. The game is played using the hotseat multiplayer method by which both players use the same device and take turns playing the game. All standard chess rules are implemented with the exception of en-passant ~~and castling ~~(todo).
+A two player chess played via the command line. The game is played using the hotseat multiplayer method by which both players use the same device and take turns playing the game. All standard chess rules are implemented ~~with the exception of en-passant and castling (todo)~~.
 
 The game will auto-detect checkmate, stalemate, and victory. The game allows one save file if you would like to save the game and continue the game later.
 
@@ -16,6 +16,7 @@ ruby chess.rb
 - **Starting the game**: Upon starting game you are given the option to start a new game or load a previous save.
 - **Moving pieces**: Type your desired move in chess notation when prompted (ex. c1). Actions are done in two steps, type only a single chess coordinate when prompted. If a move is invalid the player will be prompted again and the piece will no be moved.
 - **Castling**: To castle simply move the king two spaces towards a friendly rook
+- **En Passant**: 
 
 ## Improvments to Consider
 - **Menus**: Give users options to customize the game (manage save files, choosing player names etc.)
